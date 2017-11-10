@@ -9,20 +9,15 @@
         <link rel="stylesheet" href="showStatsStyle.css">
     </head>
     <body>
-        <h1 class="text-center">Team 1</h1>
+        <h1>Team 1</h1>
         
-        <ul class="nav nav-pills nav-justified border border-dark">  
-            <li class="nav-item">
-                <a class="nav-link" href="teamroster.html">Roster</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Schedule</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="#">Stats</a>
-            </li>
+        <ul>
+            <li><a class="nonactive" href="#">Roster</a></li>
+            <li><a class="nonactive" href="#">Schedule</a></li>
+            <li><a class="active" href="#">Statistics</a></li>
         </ul>
         
+        <div style="overflow-x:auto;">
         <table>
             <thead>
                 <tr>
@@ -69,5 +64,5 @@
                 </tr>
             </tbody>
         </table>
-        
+        </div>
 </html>

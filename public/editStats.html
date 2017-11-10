@@ -9,15 +9,16 @@
         <link rel="stylesheet" href="editStatsStyle.css">
     </head>
     <body>
-        <nav>
-            <ul>
-                <li><a href="#">Roster</a></li>
-                <li><a href="#">Schedule</a></li>
-                <li><a href="#">Statistics</a></li>
-            </ul>
-        </nav>
+        <h1>Team 1</h1>
+        
+        <ul>
+            <li><a class="nonactive" href="#">Roster</a></li>
+            <li><a class="nonactive" href="#">Schedule</a></li>
+            <li><a class="active" href="#">Statistics</a></li>
+        </ul>
         
         <form>
+        <div style="overflow-x:auto;">
         <table>
             <thead>
                 <tr>
@@ -31,7 +32,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <th>Mark</th>
+                    <th class="fname">Mark</th>
                     <td><input type="number" name="goals"></td>
                     <td><input type="number" name="ShotsOnGoal"></td>
                     <td><input type="number" name="PKs"></td>
@@ -39,7 +40,7 @@
                     <td><input type="number" name="fouls"></td>
                 </tr>
                 <tr>
-                    <th>Jake</th>
+                    <th class="fname">Jake</th>
                     <td><input type="number" name="goals"></td>
                     <td><input type="number" name="ShotsOnGoal"></td>
                     <td><input type="number" name="PKs"></td>
@@ -47,7 +48,7 @@
                     <td><input type="number" name="fouls"></td>
                 </tr>
                 <tr>
-                    <th>Sam</th>
+                    <th class="fname">Sam</th>
                     <td><input type="number" name="goals"></td>
                     <td><input type="number" name="ShotsOnGoal"></td>
                     <td><input type="number" name="PKs"></td>
@@ -55,7 +56,7 @@
                     <td><input type="number" name="fouls"></td>
                 </tr>
                 <tr>
-                    <th>Jimbo</th>
+                    <th class="fname">Jimbo</th>
                     <td><input type="number" name="goals"></td>
                     <td><input type="number" name="ShotsOnGoal"></td>
                     <td><input type="number" name="PKs"></td>
@@ -64,6 +65,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
         </form>
         
 </html>
