@@ -1,0 +1,65 @@
+		h1 {
+			text-align: center;
+		}
+		#jumbo1 {
+			height: 1000px;
+			position: relative;
+			background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("https://img3.stockfresh.com/files/g/grafvision/m/83/1892340_stock-photo-soccer-ball-on-grass.jpg") center top;
+			background-repeat: no-repeat;
+			opacity: 1;
+			text-align: center;
+			align-items: center;
+		}
+		.jumbotron .container {
+			z-index:2;
+			position:relative;
+			text-align: center;
+			left: -10px;
+		}
+		/* add borders for tabs */
+		.tab-content {
+			border-left: 1px solid #ddd;
+			border-right: 1px solid #ddd;
+			border-bottom: 1px solid #ddd;
+			padding: 10px;
+		}
+		.nav-tabs {
+			margin-bottom: 0;
+		}
+		hr {
+			border: none;
+			height: 2px;
+			color: #333;
+			background-color: #333;
+		}
+		ul {
+			list-style: none;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			list-style-position: inside;
+			font-size: 18px;
+			font-weight: bold;
+		}
+		li::before {
+			content: "•";
+			color: blue;
+			font-size: 170%;
+		}
+		li span {
+			position: relative;
+			left: 10px;
+		}
+		#teamwatch {
+			color: #34bad5;
+		}
+		p {
+			text-align: center;
+		}
+		form {
+			float: left;
+		}
+		#form {
+			display: flex;
+			justify-content: center;
+		}

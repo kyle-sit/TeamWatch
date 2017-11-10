@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width = device-width, initial-scale = 1">
+	<title>
+		Sign Up
+	</title>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<style>
+		h1 {
+			text-align: center;
+		}
+		html {
+			width: 100%;
+			height: 100%;
+		}
+		.home {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.item {
+			height: 500px;
+			width: 500px;
+		}
+		.content {
+			height: 100%;
+			padding: 40px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.in {
+			padding: 15px;
+			text-align: center;
+		}
+		.logo {
+			width: 90px;
+			height: 90px;
+			margin: 0 auto;
+			margin-bottom: 20px;
+			padding: 2px;
+			line-height: 90px;
+		}
+		.logo h1 {
+			font-weight: 700;
+			font-size: 40px;
+		}
+		.lg {
+			margin-bottom: 20px;
+		}
+		hr {
+			border: none;
+			height: 2px;
+			color: #333;
+			background-color: #333;
+		}
+		#teamwatch {
+			color: #34bad5;
+		}
+		option {
+			text-align: center;
+			justify-content: center;
+			align-items: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1 id="teamwatch">TeamWatch</h1>
+	</div>
+	<hr>
+	<div class="home">
+		<div class="item">
+			<div class="content">
+			
+				<form action="#" class="form-horizontal">
+					<div class="logo">
+						<h1>Signup</h1>
+					</div>
+					<label for="firstname">First Name</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user"></i></span>
+						<input id="firstname" type="text" class="form-control" placeholder="First Name">
+					</div>
+					<br>
+					<label for="lastname">Last Name</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user"></i></span>
+						<input id="lastname" type="text" class="form-control" placeholder="Last Name">
+					</div>
+					<br>
+					<label for="username">Username</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user"></i></span>
+						<input id="username" type="text" class="form-control" placeholder="Username">
+					</div>
+					<br>
+					<label for="password">Password</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-lock"></i></span>
+						<input id="password" type="password" class="form-control" placeholder="Password">
+					</div>
+					<br>
+					<select>
+						<option value="manager">Team Manager</option>
+						<option value="follower">Follower</option>
+					</select>
+					<br><br>
+					<div class="form-group in">
+						<input type="submit" class="btn btn info btn-block" value="Create Account">
+						<a href="login.html">Returning user? Log in!</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+</html>
