@@ -1,0 +1,51 @@
+h1{
+	text-align: center;
+	font-weight: normal;
+}
+
+hr {
+  opacity: 0.2;
+}
+
+a {
+  color: #2370ed;
+  text-decoration: none;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	text-align: center;
+}
+
+select {
+	width: 70%;
+	height: 25px;
+	margin: 10px;
+}
+
+input {
+	width: 70%;
+	margin:5px;
+	height: 20px;
+	border: 1px solid #A9A9A9;
+}
+
+.button {
+	background-color: #34bad5;
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    margin: 5px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.event {
+	background-color: #34bad5;
+	font-size: 16px;
+	color: white;
+	margin: 10px 10%;
+	padding: 10px 0;
+}
+
