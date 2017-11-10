@@ -1,0 +1,68 @@
+body {
+	font-family: Arial, sans-serif;
+}
+
+h1 {
+	text-align: center;
+}
+
+h2, p {
+	color: white;
+}
+
+ul {
+  border: 1px solid black;
+  padding: 10px 0;
+  display: table;
+  width: 100%;
+}
+
+li {
+	display: table-cell;
+	width: 33%;
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+	color: #34bad5;
+}
+
+.active {
+	background-color: #34bad5;
+	color: white;
+	padding: 10px 15vw;
+}
+
+.player {
+  vertical-align: middle;
+  margin: 0 3%;
+  display: flex;
+}
+
+.profile-img {
+  vertical-align: middle;
+  align-self: center;
+  width: 30%;
+  max-width: 100%;
+  height: auto;
+}
+
+.player-info {
+	vertical-align: middle;
+	background-color: #34bad5;
+	padding: 25px;
+	margin-left: 5%;
+	width: 55%;
+	height: auto;
+}
+
+.button {
+    background-color: #D3D3D3; /* Green */
+    border: none;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+}
