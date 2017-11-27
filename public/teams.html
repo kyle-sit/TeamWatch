@@ -27,7 +27,7 @@
 			text-align: center;
 		}
 		img {
-			margin: -23px 0px 0px 0px;
+			margin: -15px -45px -20px -15px;
 			width: 60px !important;
 			height: 30px;
 		}
@@ -66,8 +66,8 @@
 			<template id="template1">
 				<div class="jumbotron" style="background-color: #ADD8E6 !important">
 					<img src="https://seeklogo.com/images/B/Bassano_Virtus_55_Soccer_Team-logo-891B4EED05-seeklogo.com.png" alt="logo" class="col-sm-3 col-xs-3">
-				<h2 style='margin-top: -20px;'>Team1</h2>
-				<p style='font-size: 1.5vmax;'></p>
+				<h2 style='margin-top: -20px; font-size: 20px;'><a href="teamroster.html" onclick="#">Team1</a></h2>
+				<p style='font-size: 13px;'></p>
 				</div>
 			</template>
 			
@@ -86,12 +86,17 @@
 					
 					var content = document.querySelector('#template1').content;
 					content.querySelector('img').src = picture;
-					content.querySelector('h2').innerHTML = teamname;
+					content.querySelector('a').innerHTML = teamname;
 					content.querySelector('p').innerHTML = "Captain: " + captain + " | Level: " + level;
+					content.querySelector('a').setAttribute('onclick', "viewTeam(\""+key+"\");");
 					var clone = document.importNode(content, true);
 					
 					document.getElementById('left').append(clone);
 					
+				}
+				
+				function viewTeam(key) {
+					sessionStorage.setItem("currentTeam", key);
 				}
 			</script>
 
@@ -102,14 +107,15 @@
 			<template id="template2">
 				<div class="jumbotron" id="right">
 					<div class="col-sm-6 col-xs-6">
-						<h2>score (from stats)</h2>
+						<h2>10W-10L</h2>
+					</div>
+					<div class="col-sm-1 col-xs-1" style="margin-top: -10px; margin-left:-20px;">
+						<button onclick="#">Edit</button>
 					</div>
 					<div class="col-sm-1 col-xs-1" style="margin-right: 30px;">
 						<input alt="trash" type="image" src="https://openclipart.org/download/228877/Layer-1.svg" onclick="#" class="col-sm-1 col-xs-1"/>
 					</div>
-					<div class="col-sm-1 col-xs-1" style="margin-top: 0.5vmax;">
-						<button onclick="#">Edit</button>
-					</div>
+					
 				</div>
 			</template>
 			

@@ -11,7 +11,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-        <script src="classes.js"></script>
+        <script type="text/javascript" src="classes.js"></script>
     </head>
     <body>
         <h1 class="text-center">Team 1</h1>
@@ -28,8 +28,7 @@
             </li>
         </ul>
         
-        <template id="TeamStats">
-        <table class="table table-light">
+        <table class="table table-light" id='statsTable'>
             <thead class="bg-info">
                 <tr>
                     <th scope="col">Name</th>
@@ -38,56 +37,29 @@
                     <th scope="col">Penalty Kicks</th>
                     <th scope="col">Games Played</th>
                     <th scope="col">Fouls</th>
+                    <th scope="col">Edit</th>
                 </tr>
             </thead>
-            <tbody id="PlayerStats">
-  
-                <!-- <tr>
-                    <th scope="row">Mark</th>
-                    <td>3</td>
-                    <td>12</td>
-                    <td>1</td>
-                    <td>3</td>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <th scope="row">Jake</th>
-                    <td>4</td>
-                    <td>9</td>
-                    <td>0</td>
-                    <td>2</td>
-                    <td>0</td>
-                </tr>
-                <tr>
-                    <th scope="row">Sam</th>
-                    <td>0</td>
-                    <td>3</td>
-                    <td>1</td>
-                    <td>3</td>
-                    <td>3</td>
-                </tr>
-                <tr>
-                    <th scope="row">Jimbo</th>
-                    <td>1</td>
-                    <td>6</td>
-                    <td>1</td>
-                    <td>3</td>
-                    <td>2</td>
-                </tr> -->
+            <tbody>
+               <!-- data filled here through template -->
             </tbody>
         </table>
+        
+        <template id= "statsRow">
+            <tr>
+                <th>Name</th>
+                <td>Goals</td>
+                <td>SoG</td>
+                <td>PKs</td>
+                <td>GP</td>
+                <td>Fouls</td>
+                <td>Button</td>
+            </tr>
         </template>
         
-        <button class="span4 proj-div" data-toggle="modal" data-target="#playerModal">edit</button>
+        <!--<button class="span4 proj-div" data-toggle="modal" data-target="#playerModal">edit</button>-->
         
-        <!--<script>            
-                $('#pls').click(function(){
-                    $('#playerModal').modal('show');
-                    return false;
-                })
-        </script>-->
-        
-        <!-- Modal -->
+        <!-- Modal Popup for editing stats-->
         <div id="playerModal" class="modal fade">
             <div class="modal-dialog">
             <div class="modal-content">
@@ -124,49 +96,49 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <button class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-info" onclick="submitStats()">Save</button> 
             </div>
             </div>
             </div>
         </div>
         
         <script type="text/javascript">           
-            editStats() {
+            /*editStats() {
                 $('#playerModal').modal('show');
             }
             
-            myStorage = window.localStorage;
-            let playersArray = JSON.parse(myStorage.getItem("TeamRoster"));
+            submitStats() {
+                
+            }*/
             
-            window.addEventListener('StatsLoaded', function () {
-            // get the template view
-            let t = document.querySelector('#TeamStats');
-
-
-            // quick and dirty with map and arrow but more readable if a loop
-            //let markup = `<ul>${team.map(player => `<li>${player.name} # ${player.number}</li>`).join('')}</ul>`;
-            var markup = '';
-            for (i = 0; i < playersArray.length; i++) {
-                markup += '<tr id="${playersArray[i].name}"> <th scope="row">${playersArray[i].name}</th>
-                    <td>${playersArray[i].goals}</td>
-                    <td>${playersArray[i].SoG}</td>
-                    <td>${playersArray[i].PKs}</td>
-                    <td>${playersArray[i].GP}</td>
-                    <td>${playersArray[i].fouls}</td> 
-                    <td> <button data-toggle="modal" data-target="#playerModal">edit</button> </td>
-                    </tr>'; 
-            }
+            window.addEventListener('DOMContentLoaded', function () {       
+                let playersItem = localStorage.getItem("players");
+                let playersArray = JSON.parse(playersItem);
             
-            
-            // Populate the template.
-            t.content.querySelector('#PlayerStats').innerHTML = markup;
+                // get the template view
+                let t = document.querySelector('#statsRow');
+                var tb = document.querySelector("tbody");
+                
+                var th = t.content.querySelector('th');
+                var td = t.content.querySelectorAll('td');
+                
+                for (var key in playersArray){
+                    let player = playersArray[key];
+                    th.textContent = player["name"];
+                    td[0].textContent = player["goals"];
+                    td[1].textContent = player["SoG"];
+                    td[2].textContent = player["PKs"];
+                    td[3].textContent = player["GP"];
+                    td[4].textContent = player["fouls"];
+                    td[5].innerHTML = '<button data-toggle="modal" data-target="#playerModal">edit</button>';
 
-            // clone it make sure it is deep - the true part
-            let clonedTemplate = document.importNode(t.content, true);
+                    // clone it make sure it is deep - the true part
+                    let clonedTemplate = document.importNode(t.content, true);
         
-            // add it to the view
-            document.querySelector('#view').appendChild(clonedTemplate);
+                    // add it to the view
+                    tb.appendChild(clonedTemplate);
+                }
 
             });
             

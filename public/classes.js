@@ -12,7 +12,7 @@ class Player {
         this.fouls = 0;
     }
 
-   /* set name (name) {
+    /*set name (name) {
         this.name = name;
     }
 
@@ -65,7 +65,7 @@ class Game {
         this.win = false;
     }
      
-    set oppName (oppName) {
+    /*set oppName (oppName) {
         this.oppName = oppName;
     }    
 
@@ -95,5 +95,5 @@ class Game {
 
     set win (win) {
         this.win = win;
-    }
+    }*/
 }

@@ -11,38 +11,130 @@
     <title>Game Page</title>
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" rel="stylesheet">
-
+    <script type="text/javascript" src="classes.js"></script>
+    
   </head>
   <body>
   	<h1 class="text-center mt-2">
-  		<a href="#">Team 1</a>
+  		<a id = "teamName">Team 1</a>
   	</h1>
   	<hr>
     <h2 class="text-center mt-2 pb-3">Away vs. Team B</h2>
     <form method="post" action="#">
 	  <div class="form-group w-75 mt-2 mx-auto">
-		<select class="form-control">
-	      <option>Goal</option>
-	      <option>Penalty</option>
-	      <option>Foul</option>
-          <option>Red Card</option>
-          <option>Yellow Card</option>
-          <option>Shots on Goal</option>
-          <option>Corner Kick</option>
-          <option>Goal Kick</option>
-      </select>
-      </div>
+		<select id="liveStat" class="form-control">
+                    <option value="Goal">Goal</option>
+                    <option value="PKMade">Made Penalty Kick</option>
+                    <option value="PKMissed">Missed Penalty Kick</option>
+                    <option value="Foul">Foul</option>
+                    <option value="RC">Red Card</option>
+                    <option value="YC">Yellow Card</option>
+                    <option value="SoG">Shots on Goal</option>
+                    <option value="CK">Corner Kick</option>
+                    <option value="GK">Goal Kick</option>
+                </select>
+          </div>
       <div class="form-group">	
         <input type="text" id="player" placeholder="Enter Player" class="form-control w-75 border mx-auto"><br>
         <div class="row">
-          <button type="submit" value="Submit" class="btn-info mb-4 mx-auto">Add Event</button> 
+          <button id="submitStat" type="button" value="Submit" class="btn-info mb-4 mx-auto">Add Event</button> 
         </div>
       </div>
     </form>
     <h3 class="text-center">Event Feed</h3>
-    <p class="bg-info w-75 text-white p-2 mx-auto text-center">Jimmy Joe #12 scored a goal</p>
-    <p class="bg-info w-75 text-white p-2 mx-auto text-center">David Don #5 got a penalty</p> 
-    <p class="bg-info w-75 text-white p-2 mx-auto text-center">John Michael #8 got a yellow card</p> 
+    
+    <div id="incomingStats"></div>
+    
+    <template id="liveUpdate">
+       <p class="bg-info w-75 text-white p-2 mx-auto text-center">Jimmy Joe #12 scored a goal</p>
+    </template>
+    
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {       
+            var team = document.querySelector('#teamName');
+            team.textContent = sessionStorage.getItem("currentTeam");
+            
+            var game = document.querySelector("h2");
+            game.textContent = sessionStorage.getItem("currentGame");
+        
+            var games = localStorage.getItem("games");
+            var gamesArray;
+            if (!games){
+                gamesArray = [];
+            } else {
+                gamesArray = JSON.parse(game);
+            }
+                
+        });
+        
+        let games = localStorage.getItem("games");
+        var gamesArray = JSON.parse(games);
+        
+        let playersItem = localStorage.getItem("players");
+        var playersArray = JSON.parse(playersItem);
+        
+        document.getElementById("submitStat").addEventListener("click",function() {
+            var s = document.getElementById("liveStat");
+            var stat = s.options[s.selectedIndex].value;     
+            let playerName = document.getElementById('player').value;
+            var pickedPlayer;
+            
+            for (var key in playersArray){
+                let player = playersArray[key];
+                if(player.name == playerName) {
+                    pickedPlayer = key;
+                }
+                console.log(player.name);
+            }
+            
+            console.log(playersArray[pickedPlayer]);
+            
+            let t = document.querySelector('#liveUpdate');
+            var list = document.querySelector('#incomingStats');
+            var p = t.content.querySelector('p');
+            
+            if (stat == "Goal") {
+                playersArray[pickedPlayer].goals += 1;
+                playersArray[pickedPlayer].SoG += 1;
+                p.textContent = playerName + " scored a goal!";
+            } else if (stat == "PKMade"){
+                playersArray[pickedPlayer].goals += 1;
+                playersArray[pickedPlayer].PKs += 1;
+                playersArray[pickedPlayer].SoG += 1;
+                p.textContent = playerName + " scored a penalty kick!";
+            } else if (stat == "PKMissed"){
+                playersArray[pickedPlayer].PKs += 1;
+                playersArray[pickedPlayer].SoG += 1;
+                p.textContent = playerName + " missed a penalty kick!";
+            } else if (stat == "Foul"){
+                playersArray[pickedPlayer].fouls += 1;
+                p.textContent = playerName + " committed a foul!";
+            } else if (stat == "RC" ) {
+                playersArray[pickedPlayer].fouls += 1;
+                p.textContent = playerName + " received a red card!";
+            } else if (stat == "YC" ) {
+                playersArray[pickedPlayer].fouls += 1;
+                p.textContent = playerName + " received a yellow card!";
+            } else if (stat == "GK" ) {
+                p.textContent = playerName + " took a goal kick!";
+            } else if (stat == "CK" ) {
+                p.textContent = playerName + " took a corner kick!";
+            } 
+            
+            //p.textContent = player + " took a corner kick!";
+             
+            
+            // clone it make sure it is deep - the true part
+            let clone = document.importNode(t.content, true);
+        
+            // add it to the view
+            list.appendChild(clone);
+            
+            //reset players stats in storage
+            localStorage.setItem("players",JSON.stringify(playersArray));
+
+        });
+    </script>
     
     <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Flivegame.html">W3 Validator</a></p>
     

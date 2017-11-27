@@ -166,19 +166,6 @@
     </template>
 
           <script>
-            class Game {
-              constructor(oppName, homeGame, date, time, location, tscore, oscore){
-                this.oppName = oppName;
-                this.home = homeGame;
-                this.date = date;
-                this.time = time;
-                this.location = location;
-                this.tscore = tscore;
-                this.oscore = oscore;
-                this.win = false;
-              }
-            }
-
             document.getElementById("save").addEventListener("click",function(){
               var oppName = document.getElementById("oppName").value;
               var home = document.getElementById("homeGame").value;
