@@ -106,6 +106,9 @@
                 playersArray[pickedPlayer].PKs += 1;
                 playersArray[pickedPlayer].SoG += 1;
                 p.textContent = playerName + " missed a penalty kick!";
+            } else if (stat == "SoG"){
+                playersArray[pickedPlayer].SoG += 1;
+                p.textContent = playerName + " missed a shot!";
             } else if (stat == "Foul"){
                 playersArray[pickedPlayer].fouls += 1;
                 p.textContent = playerName + " committed a foul!";
