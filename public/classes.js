@@ -12,7 +12,7 @@ class Player {
         this.fouls = 0;
     }
 
-    set name (name) {
+   /* set name (name) {
         this.name = name;
     }
 
@@ -50,7 +50,7 @@ class Player {
 
     set fouls (fouls) {
         this.fouls = fouls;
-    }
+    }*/
 }
 
 class Game {
