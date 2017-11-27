@@ -1,10 +1,10 @@
 class Player {
-    constructor(fName, lName, DOB, jerseyNumber, position) {
-        this.fName = fName;
-        this.lName = lName;
-        this.DOB = DOB;
-        this.jerseyNumber = jerseyNumber;
+    constructor(name, num, dob, position) {
+        this.name = name;
+        this.num = num;
+        this.dob = dob;
         this.position = position;
+        this.img;
         this.goals = 0;
         this.SoG = 0;
         this.PKs = 0;
@@ -12,24 +12,24 @@ class Player {
         this.fouls = 0;
     }
 
-    set fName (fName) {
-        this.fName = fName;
+    set name (name) {
+        this.name = name;
     }
 
-    set lName (lName) {
-        this.lName = lName;
+    set num (num) {
+        this.num = num;
     }
 
-    set DOB (DOB) {
-        this.DOB = DOB;
-    }
-
-    set jerseyNumber (jerseyNumber) {
-        this.jerseyNumber = jerseyNumber;
+    set dob (dob) {
+        this.dob = dob;
     }
 
     set position (position) {
         this.position = position;
+    }
+
+    set img (img) {
+        this.img = img;
     }
 
     set goals (goals) {
@@ -54,31 +54,46 @@ class Player {
 }
 
 class Game {
-    constructor(WoL, goalsFor, goalsAgainst, AoH, date) {
-        this.WoL = WoL;
-        this.goalsFor = goalsFor;
-        this.goalsAgainst = goalsAgainst;
-        this.AoH = AoH;
+    constructor(oppName, home, date, time, location, tscore, oscore) {
+        this.oppName = oppName;
+        this.home = home;
         this.date = date;
+        this.time = time;
+        this.location = location;
+        this.tscore = tscore;
+        this.oscore = oscore;
+        this.win = false;
     }
      
-    set WoL (WoL) {
-        this.WoL = WoL;
+    set oppName (oppName) {
+        this.oppName = oppName;
     }    
 
-    set goalsFor (goalsFor) {
-        this.goalsFor = goalsFor;
-    }
-
-    set goalsAgainst (goalsAgainst) {
-        this.goalsAgainst = goalsAgainst;
-    }
-
-    set AoH (AoH) {
-        this.AoH = AoH;
+    set home (home) {
+        this.home = home;
     }
 
     set date (date) {
         this.date = date;
+    }
+
+    set time (time) {
+        this.time = time;
+    }
+
+    set date (location) {
+        this.location = location;
+    }
+
+    set tscore (tscore) {
+        this.tscore = tscore;
+    }
+
+    set oscore (oscore) {
+        this.oscore = oscore;
+    }
+
+    set win (win) {
+        this.win = win;
     }
 }

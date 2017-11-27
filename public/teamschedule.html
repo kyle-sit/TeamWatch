@@ -1,5 +1,5 @@
-<!-- File Size:81B Speed: 522ms -->
 <!DOCTYPE html>
+<!-- File Size:81B Speed: 522ms -->
 <html lang="en">
   <head>
 
@@ -10,23 +10,14 @@
 
     <title>Team Schedule Page</title>
 
-    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
 
   </head>
   <body>
-
-    <script>
-      function makeGame() {
-        var game;
-        game = document.createElement();
-      }
-
-    </script>
-
     <h1 class="text-center">Team 1</h1>
     <ul class="nav nav-pills nav-justified border border-dark">  
       <li class="nav-item">
@@ -51,81 +42,268 @@
             <div class="modal-body">
               <form class="form-horizontal" role="form">
                 <div class="form-group">
-                  <label for="oppTeam">Opposing Team</label>
-                  <input type="text" class="form-control" id="oppTeam" placeholder="Opposing Team">
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input class="form-check-input" type="radio" name="homeGame" id="home" value="option1">
-                    Home
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input class="form-check-input" type="radio" name="homeGame" id="away" value="option2">
-                    Away
-                  </label>
+                  <label for="oppName">Opposing Team</label>
+                  <input type="text" class="form-control" id="oppName" placeholder="Opposing Team">
                 </div>
                 <div class="form-group">
-                  <label for="gameDate">Date</label>
-                  <input type="date" class="form-control" id="gameDate">
+                  <label for="homeGame"> Home or Away</label><br>
+                  <select class="form-group" id="homeGame">
+                    <option value="Home">Home</option>
+                    <option value="Away">Away</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <label for="gameTime">Time</label>
-                  <input type="time" class="form-control" id="gameTime">
+                  <label for="date">Date</label>
+                  <input type="date" class="form-control" id="date">
                 </div>
                 <div class="form-group">
-                  <label for="gameLoc">Location</label>
-                  <input type="text" class="form-control" id="gameLoc">
+                  <label for="time">Time</label>
+                  <input type="time" class="form-control" id="time">
                 </div>
                 <div class="form-group">
-                  <label for="teamScore">Team Score</label>
-                  <input type="number" class="form-control" id="teamScore" min=0 placeholder="-">
-                  <label for="oppScore">Opponent Score</label>
-                  <input type="number" class="form-control" id="oppScore" min= 0 placeHolder="-">
+                  <label for="location">Location</label>
+                  <input type="text" class="form-control" id="location">
+                </div>
+                <div class="form-group">
+                  <label for="tscore">Team Score</label>
+                  <input type="number" class="form-control" id="tscore" min=0 placeholder="-">
+                  <label for="oscore">Opponent Score</label>
+                  <input type="number" class="form-control" id="oscore" min= 0 placeHolder="-">
                 </div>
               </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-primary btn-info">Save</button>
+              <button type="button" class="btn btn-primary btn-info" id="save">Save</button>
             </div>
           </div>
         </div>
       </div>
     <br>
-    <div class="card col-11 mx-auto">
-      <div class="row">
-        <div class="col">
-          <h5>Away vs. Team D</h5>
-          <p>10/20/17 2pm at CHS</p>
-        </div>
-        <div class="col text-center">
-          <div class="row text-success h-100">
-            <span class="col h2 my-auto">W</span>
-            <span class="col h2 my-auto">3-2</span>
+
+    <div class="modal fade" id="editModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Game</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <label for="oldTeam">Opposing Team</label>
+                  <input type="text" class="form-control" id="oldTeam" placeholder="Opposing Team">
+                </div>
+                <div class="form-group">
+                  <label for="oldHome"> Home or Away</label><br>
+                  <select class="form-group" id="oldHome">
+                    <option value="Home">Home</option>
+                    <option value="Away">Away</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="oldDate">Date</label>
+                  <input type="date" class="form-control" id="oldDate">
+                </div>
+                <div class="form-group">
+                  <label for="oldTime">Time</label>
+                  <input type="time" class="form-control" id="oldTime">
+                </div>
+                <div class="form-group">
+                  <label for="oldLoc">Location</label>
+                  <input type="text" class="form-control" id="oldLoc">
+                </div>
+                <div class="form-group">
+                  <label for="oldT">Team Score</label>
+                  <input type="number" class="form-control" id="oldT" min=0 placeholder="-">
+                  <label for="oldS">Opponent Score</label>
+                  <input type="number" class="form-control" id="oldS" min= 0 placeHolder="-">
+                </div>
+                <div class="form-group">
+                  <input type="hidden" id="key">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary btn-info" id="update">Save</button>
+            </div>
           </div>
         </div>
       </div>
+
+    <div id="gameList">
+
     </div>
-    <br>
-    <div class="card col-11 mx-auto">
-      <div class="row">
-        <div class="col">
-          <h5>Home vs. Team A</h5>
-          <p>10/20/17 2pm at CHS</p>
-        </div>
-        <div class="col text-center">
-          <div class="row text-success h-100">
-            <span class="col h2 my-auto">W</span>
-            <span class="col h2 my-auto">2-1</span>
+
+    <template id="gameRow">
+      <div class="card col-11 mx-auto">
+        <div class="row">
+          <div class="col">
+            <h5> </h5>
+            <p> at </p>
+          </div>
+          <div class="col text-center">
+            <div class="row text-success h-100">
+              <span class="col h3 my-auto"> </span>
+              <span class="col h3 my-auto"> - </span>
+              <div class="col">
+                <button type="button" class="btn btn-info h-50 " data-toggle="modal" data-target="#editModal" id="edit">
+                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-info h-50" id="remove">
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <br>
-  
-    
+      <br>
+    </template>
+
+          <script>
+            class Game {
+              constructor(oppName, homeGame, date, time, location, tscore, oscore){
+                this.oppName = oppName;
+                this.home = homeGame;
+                this.date = date;
+                this.time = time;
+                this.location = location;
+                this.tscore = tscore;
+                this.oscore = oscore;
+                this.win = false;
+              }
+            }
+
+            document.getElementById("save").addEventListener("click",function(){
+              var oppName = document.getElementById("oppName").value;
+              var home = document.getElementById("homeGame").value;
+              var date = document.getElementById("date").value;
+              var time = document.getElementById("time").value;
+              var location = document.getElementById("location").value;
+              var tscore = document.getElementById("tscore").value;
+              var oscore = document.getElementById("oscore").value;
+
+              if(oppName == "" || home == "" || date == "" || time == "" || location == "" || tscore == "" || oscore == "" ) {
+                  alert("Please enter all fields");
+              }
+              else{
+                let g = new Game(oppName,home,date,time,location,tscore,oscore);
+                if(oscore < tscore) {
+                  g.win = true;
+                }
+                var game = localStorage.getItem("games");
+                var gamesArr;
+                if (!game){
+                  gamesArr = [];
+                } else {
+                  gamesArr = JSON.parse(game);
+                }
+                gamesArr.push(g);
+                localStorage.setItem("games",JSON.stringify(gamesArr));
+                for (var key in gamesArr){
+                  console.log(JSON.stringify(gamesArr[key]));
+                }$('#gameModal').modal('hide');
+                window.location.reload();
+              }
+            });
+
+            window.addEventListener('DOMContentLoaded', function() {
+              let game = localStorage.getItem("games");
+              let gameArr = JSON.parse(game);
+              var markup = "";
+              var gameList = document.querySelector("#gameList");
+              let t = document.querySelector('#gameRow');
+              var h5 = t.content.querySelector('h5');
+              var p = t.content.querySelector('p');
+              var span = t.content.querySelectorAll('span');
+              for (var key in gameArr){
+                var k = String(key);
+                let a = gameArr[key];
+                var wl = "L";
+                if(a.win == true){
+                  wl = "W";
+                }
+                h5.innerHTML = a.home + " vs " + a.oppName;
+                p.innerHTML = a.date + " " + a.time + " at " + a.location;
+                span[0].innerHTML =  wl;
+                span[1].innerHTML =  a.tscore + " - " + a.oscore;
+                t.content.querySelector("#remove").setAttribute('onclick', "deleteGame("+k+");");
+                t.content.querySelector("#edit").setAttribute('onclick', "editGame(\""+k+"\");");
+                var clone = document.importNode(t.content, true);
+                gameList.appendChild(clone);
+              }
+            });
+
+            function deleteGame(key) {
+              let gamesItem = localStorage.getItem("games");
+              let gamesArr = JSON.parse(gamesItem);
+              localStorage.removeItem(key);
+              gamesArr.splice(key,1);
+              localStorage.setItem("games", JSON.stringify(gamesArr));
+              window.location.reload();
+            }
+
+            function editGame(key) {
+              let gamesItem = localStorage.getItem("games");
+              let gamesArr = JSON.parse(gamesItem);
+              let game = gamesArr[key];
+
+
+              var oldTeam = game.oppName;
+              var oldHome = game.home;
+              var oldDate = game.date;
+              var oldTime = game.time;
+              var oldLoc = game.location;
+              var oldT = game.tscore;
+              var oldS = game.oscore;
+
+              document.getElementById("oldTeam").value = oldTeam;
+              document.getElementById("oldHome").value = oldHome;
+              document.getElementById("oldDate").value = oldDate;
+              document.getElementById("oldTime").value = oldTime;
+              document.getElementById("oldLoc").value = oldLoc;
+              document.getElementById("oldT").value = oldT;
+              document.getElementById("oldS").value = oldS;
+              document.getElementById("key").value = key;
+            }
+
+            document.getElementById("update").addEventListener("click",function(){
+              var team = document.getElementById("oldTeam").value;
+              var home = document.getElementById("oldHome").value;
+              var date = document.getElementById("oldDate").value;
+              var time = document.getElementById("oldTime").value;
+              var location = document.getElementById("oldLoc").value;
+              var tscore = document.getElementById("oldT").value;
+              var oscore = document.getElementById("oldS").value;
+              var key = document.getElementById("key").value;
+
+
+              if(oppName == "" || home == "" || date == "" || time == "" || location == "" || tscore == "" || oscore == "" ) {
+                  alert("Please enter all fields");
+              }
+              else{
+                var gamesItem = localStorage.getItem("games");
+                var gamesArr = JSON.parse(gamesItem);
+                var g = gamesArr[key];
+          
+                g.oppName = team;
+                g.home = home;
+                g.date = date;
+                g.time = time;
+                g.location = location;
+                g.tscore = tscore;
+                g.oscore = oscore;
+
+                localStorage.setItem("games",JSON.stringify(gamesArr));
+          
+                $('#editModal').modal('hide');
+                window.location.reload();
+              }
+            });
+          </script>
+
 
     <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Fteamschedule.html">W3 Validator</a></p>
 
