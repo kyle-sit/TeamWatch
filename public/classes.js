@@ -65,7 +65,7 @@ class Game {
         this.win = false;
     }
      
-    set oppName (oppName) {
+    /*set oppName (oppName) {
         this.oppName = oppName;
     }    
 
@@ -95,5 +95,5 @@ class Game {
 
     set win (win) {
         this.win = win;
-    }
+    }*/
 }
