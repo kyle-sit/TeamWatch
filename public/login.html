@@ -96,7 +96,7 @@
 				</form>
 				<script>
 					function check(form) {
-						if (form.username.value == "username" || form.password.value == "password") {
+						if (sessionStorage.getItem(form.username.value) == form.password.value) {
 							document.getElementById("form").action = "teams.html";
 						}
 						else {

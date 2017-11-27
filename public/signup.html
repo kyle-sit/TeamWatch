@@ -79,7 +79,7 @@
 		<div class="item">
 			<div class="content">
 			
-				<form action="#" class="form-horizontal">
+				<form id='form' action="#" class="form-horizontal">
 					<div class="logo">
 						<h1>Signup</h1>
 					</div>
@@ -113,10 +113,21 @@
 					</select>
 					<br><br>
 					<div class="form-group in">
-						<input type="submit" class="btn btn info btn-block" value="Create Account">
+						<input type="submit" class="btn btn info btn-block" value="Create Account" onclick="register()">
 						<a href="login.html">Returning user? Log in!</a>
 					</div>
 				</form>
+				
+				<script>
+					function register() {
+						var username = document.getElementById('username').value;
+						var password = document.getElementById('password').value;
+						sessionStorage.setItem(username, password);
+						document.getElementById('form').action = "login.html";
+					}
+				
+				</script>
+				
 			</div>
 		</div>
 	</div>
