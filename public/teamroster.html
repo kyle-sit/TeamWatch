@@ -71,7 +71,7 @@
               </div>
               <div class="form-group">
                 <label for="imgLink">Player Image Link</label>
-                <!--
+                <!-- FOR LATER: update to save image files
                 <input type="file" name="playerImg" accept="image/*" id="playerImg">
                 -->
                 <input type="text" id="imgLink">
@@ -159,7 +159,7 @@
               <div class="form-group">
                 <label for="oldLink">Player Image Link</label>
                 <input type="text" id="oldLink">
-                <!--
+                <!-- FOR LATER: update to save image files
                 <input type="file" name="playerImg" accept="image/*" id="oldImg">
                 -->
               </div>
@@ -206,7 +206,7 @@
           let p = new Player(name,num,dob,position);
           var playersItem = localStorage.getItem("players");
           var playersArr;
-          if(image){
+          if(img){
             p.img = img;
           }
           if (!playersItem){
@@ -241,8 +241,12 @@
           console.log("h2.innerHTML: " + h2.innerHTML);
           h6[0].innerHTML = "DOB: " + player["dob"];
           h6[1].innerHTML = "Position: " + player["position"];
+          h6[2].innerHTML = "ID: " + (++key);
           if(player.img){
             image.src = player.img;
+          }
+          else {
+            image.src = "http://primitivedesigns.co.uk/squarepegscoaching.com/wp-content/uploads/2017/03/Avatar-1.png";
           }
           t.content.querySelector("#remove").setAttribute('onclick', "deletePlayer("+a+");");
           t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+a+"\");");

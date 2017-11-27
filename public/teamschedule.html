@@ -15,6 +15,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+   <!-- <script type="text/javascript" src="classes.js"></script>-->
 
   </head>
   <body>
@@ -27,7 +28,7 @@
         <a class="nav-link active bg-info" href="#">Schedule</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-info" href="#">Stats</a>
+        <a class="nav-link text-info" href="showStatsBS.html">Stats</a>
       </li>
     </ul>
     <br>
@@ -144,19 +145,21 @@
             <p> at </p>
           </div>
           <div class="col text-center">
-            <div class="row text-success h-100">
-              <span class="col h3 my-auto"> </span>
-              <span class="col h3 my-auto"> - </span>
-              <div class="col">
-                <button type="button" class="btn btn-info h-50 " data-toggle="modal" data-target="#editModal" id="edit">
-                  <i class="fa fa-pencil" aria-hidden="true"></i>
-                </button>
-                <button type="button" class="btn btn-info h-50" id="remove">
-                  <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
-              </div>
+            <div class="row h-100">
+              <span class="col h3 my-auto" id="score" style=""> - </span>
+            </div>
+              
             </div>
           </div>
+          <div class="row mx-auto">
+                <button type="button" class="btn btn-info h-50 mr-2 mb-1" data-toggle="modal" data-target="#editModal" id="edit">
+                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-info h-50 mr-2 mb-1" id="remove">
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-info h-50 mb-1" id="livegame">Live Game</button>
+              </div>
         </div>
       </div>
       <br>
@@ -190,9 +193,6 @@
               }
               else{
                 let g = new Game(oppName,home,date,time,location,tscore,oscore);
-                if(oscore < tscore) {
-                  g.win = true;
-                }
                 var game = localStorage.getItem("games");
                 var gamesArr;
                 if (!game){
@@ -217,19 +217,16 @@
               let t = document.querySelector('#gameRow');
               var h5 = t.content.querySelector('h5');
               var p = t.content.querySelector('p');
-              var span = t.content.querySelectorAll('span');
+              var span = t.content.querySelector('span');
               for (var key in gameArr){
                 var k = String(key);
                 let a = gameArr[key];
-                var wl = "L";
-                if(a.win == true){
-                  wl = "W";
-                }
                 h5.innerHTML = a.home + " vs " + a.oppName;
                 p.innerHTML = a.date + " " + a.time + " at " + a.location;
-                span[0].innerHTML =  wl;
-                span[1].innerHTML =  a.tscore + " - " + a.oscore;
+                span.innerHTML =  a.tscore + " - " + a.oscore;
+                
                 t.content.querySelector("#remove").setAttribute('onclick', "deleteGame("+k+");");
+                t.content.querySelector("#livegame").setAttribute('onclick',"livegame(\""+k+"\");");
                 t.content.querySelector("#edit").setAttribute('onclick', "editGame(\""+k+"\");");
                 var clone = document.importNode(t.content, true);
                 gameList.appendChild(clone);
@@ -249,7 +246,6 @@
               let gamesItem = localStorage.getItem("games");
               let gamesArr = JSON.parse(gamesItem);
               let game = gamesArr[key];
-
 
               var oldTeam = game.oppName;
               var oldHome = game.home;
@@ -279,7 +275,6 @@
               var oscore = document.getElementById("oldS").value;
               var key = document.getElementById("key").value;
 
-
               if(oppName == "" || home == "" || date == "" || time == "" || location == "" || tscore == "" || oscore == "" ) {
                   alert("Please enter all fields");
               }
@@ -302,6 +297,12 @@
                 window.location.reload();
               }
             });
+
+            function livegame(key) {
+              sessionStorage.clear();
+              sessionStorage.setItem("currentGame",key);
+              document.location.href = "livegame.html";
+            }
           </script>
 
 
