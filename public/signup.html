@@ -69,8 +69,64 @@
 			align-items: center;
 		}
 	</style>
-	<script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-	<script src="classes.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+	<script>
+
+		var config = {
+		apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+		authDomain: "teamsnipelk.firebaseapp.com",
+		databaseURL: "https://teamsnipelk.firebaseio.com",
+		projectId: "teamsnipelk",
+		storageBucket: "teamsnipelk.appspot.com",
+		messagingSenderId: "941340425394"
+		};
+		firebase.initializeApp(config);
+		
+		var db = firebase.database();
+		
+		function register() {
+			var un = document.getElementById('username').value;
+			var pw = document.getElementById('password').value;
+			var fn = document.getElementById('firstname').value;
+			var ln = document.getElementById('lastname').value;
+			var r = document.getElementById('role').value;
+			//sessionStorage.setItem(username, password);
+			
+			if (un.length == 0 || pw.length == 0 || fn.length == 0 || ln.length == 0) {
+				alert("Please fill out all the fields.");
+				return false;
+			}
+			
+			function validateEmail(email) {
+				var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+				return re.test(email);
+			}
+			
+			if (validateEmail(un)) {
+				firebase.auth().createUserWithEmailAndPassword(un, pw).catch(function(error) {
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					alert(errorMessage);
+				});
+			}
+			else {
+				alert("Enter valid email address!");
+				return false;
+			}
+			
+			firebase.auth().onAuthStateChanged(function(user) {
+				if(user) {
+					user.username = un;
+					user.password = pw;
+					user.firstname = fn;
+					user.lastname = ln;
+					user.role = r;
+					user.teams = [];
+					window.location = "teams.html";
+				}
+			});
+		}
+	</script>
 </head>
 <body>
 	<div class="container">
@@ -97,10 +153,10 @@
 						<input id="lastname" type="text" class="form-control" placeholder="Last Name">
 					</div>
 					<br>
-					<label for="username">Username</label>
+					<label for="username">Email</label>
 					<div class="input-group">
 						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input id="username" type="text" class="form-control" placeholder="Username">
+						<input id="username" type="text" class="form-control" placeholder="Email">
 					</div>
 					<br>
 					<label for="password">Password</label>
@@ -109,26 +165,16 @@
 						<input id="password" type="password" class="form-control" placeholder="Password">
 					</div>
 					<br>
-					<select>
+					<select id="role">
 						<option value="manager">Team Manager</option>
 						<option value="follower">Follower</option>
 					</select>
 					<br><br>
 					<div class="form-group in">
-						<input type="submit" class="btn btn info btn-block" value="Create Account" onclick="register()">
+						<input id="submit" type="submit" class="btn btn info btn-block" value="Create Account" onclick="register()">
 						<a href="login.html">Returning user? Log in!</a>
 					</div>
 				</form>
-				
-				<script>
-					function register() {
-						var username = document.getElementById('username').value;
-						var password = document.getElementById('password').value;
-						sessionStorage.setItem(username, password);
-						document.getElementById('form').action = "login.html";
-					}
-				
-				</script>
 				
 			</div>
 		</div>
