@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="classes.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 
   </head>
   <body>
@@ -178,17 +179,22 @@
     
     <br>
     <script>
-      /*class Player {
-        constructor(name, num, dob, position) {
-          this.name = name;
-          this.num = num;
-          this.dob = dob;
-          this.position = position;
-          this.img;
-        }
-      }*/
+      var config = {
+          apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+          authDomain: "teamsnipelk.firebaseapp.com",
+          databaseURL: "https://teamsnipelk.firebaseio.com",
+          projectId: "teamsnipelk",
+          storageBucket: "teamsnipelk.appspot.com",
+          messagingSenderId: "941340425394"
+        };
+        firebase.initializeApp(config);
+        var db = firebase.database();
 
-      document.getElementById("save").addEventListener("click",function(){
+        var username = sessionStorage.getItem("username");
+        username = "lynleymaster";
+        var teamid = "lions";
+
+      document.getElementById("save").addEventListener("click",function(){ 
         var name = document.getElementById("name").value;
         var num = document.getElementById("num").value;
         var dob = document.getElementById("dob").value;
@@ -202,86 +208,70 @@
         if(name == "" || num == "" || dob == "" || position == ""){
           alert("Please enter all fields");
         }
-        else{
-          let p = new Player(name,num,dob,position);
-          var playersItem = localStorage.getItem("players");
-          var playersArr;
-          if(img){
-            p.img = img;
-          }
-          if (!playersItem){
-            playersArr = [];
-          } else {
-            playersArr = JSON.parse(playersItem);
-          }
-          playersArr.push(p);
-
-          localStorage.setItem("players",JSON.stringify(playersArr));
-          for (var key in playersArr){
-            console.log(JSON.stringify(playersArr[key]));
-          }
+        else {
+          firebase.database().ref('teams/'+teamid+'/players/'+num).set({
+            name: name,
+            num: num,
+            dob: dob,
+            position: position,
+            GP: 0,
+            PKs: 0,
+            SoG: 0,
+            fouls: 0,
+            goals: 0
+          });
+          
           $('#playerModal').modal('hide');
           window.location.reload();
         }
       });
 
       window.addEventListener('DOMContentLoaded', function() {
-        let playersItem = localStorage.getItem("players");
-        let playersArr = JSON.parse(playersItem);
-        var markup = "";
+        var key = 0;
         var playerList = document.querySelector("#playerList");
         let t = document.querySelector('#playerRow');
         var h2 = t.content.querySelector('h2');
         var h6 = t.content.querySelectorAll('h6');
         var image = t.content.querySelector('img');
-        for (var key in playersArr){
-          let player = playersArr[key];
-          var a = String(key);
-          h2.innerHTML = player["name"] + " #" + player["num"];
-          console.log("h2.innerHTML: " + h2.innerHTML);
-          h6[0].innerHTML = "DOB: " + player["dob"];
-          h6[1].innerHTML = "Position: " + player["position"];
-          h6[2].innerHTML = "ID: " + (++key);
-          if(player.img){
-            image.src = player.img;
-          }
-          else {
-            image.src = "http://primitivedesigns.co.uk/squarepegscoaching.com/wp-content/uploads/2017/03/Avatar-1.png";
-          }
-          t.content.querySelector("#remove").setAttribute('onclick', "deletePlayer("+a+");");
-          t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+a+"\");");
-          var clone = document.importNode(t.content, true);
-          playerList.appendChild(clone);
-        }
+
+        firebase.database().ref('teams/'+teamid+'/players/').once('value',function(snapshot){
+          snapshot.forEach(function(player){
+            h2.innerHTML = player.val().name + " #" + player.val().num;
+            h6[0].innerHTML = "DOB: " + player.val().dob;
+            h6[1].innerHTML = "Position: " + player.val().position;
+            h6[2].innerHTML = "ID: " + (++key);
+            if(player.img){
+              image.src = player.img;
+            }
+            else {
+              image.src = "http://primitivedesigns.co.uk/squarepegscoaching.com/wp-content/uploads/2017/03/Avatar-1.png";
+            }
+            t.content.querySelector("#remove").setAttribute('onclick', "deletePlayer(\""+player.val().num+"\");");
+            t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+player.val().num+"\");");
+            var clone = document.importNode(t.content, true);
+            playerList.appendChild(clone);
+          });
+        });
       });
 
       function deletePlayer(key) {
-        console.log("deleting: " + key);
-        let playersItem = localStorage.getItem("players");
-        console.log("Before " + playersItem);
-        let playersArr = JSON.parse(playersItem);
-        localStorage.removeItem(key);
-        playersArr.splice(key,1);
-        console.log("After " + JSON.stringify(playersArr));
-        localStorage.setItem("players", JSON.stringify(playersArr));
+        firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
         window.location.reload();
       }
 
       function editPlayer(key) {
-        let playersItem = localStorage.getItem("players");
-        let playersArr = JSON.parse(playersItem);
-        let player = playersArr[key];
-
-        var oldName = player.name;
-        var oldNum = player.num;
-        var oldDob = player.dob;
-        var oldPos = player.position;
-
-        document.getElementById("oldName").value = oldName;
-        document.getElementById("oldNum").value = oldNum;
-        document.getElementById("oldDob").value = oldDob;
-        document.getElementById("oldPos").value = oldPos;
-        document.getElementById("key").value = key;
+        firebase.database().ref('teams/'+teamid+'/players/'+key).once('value',function(player){
+          var oldName = player.val().name;
+          var oldNum = player.val().num;
+          var oldDob = player.val().dob;
+          var oldPos = player.val().position;
+          document.getElementById("oldName").value = oldName;
+          document.getElementById("oldNum").value = oldNum;
+          document.getElementById("oldDob").value = oldDob;
+          document.getElementById("oldPos").value = oldPos;
+          document.getElementById("key").value = key;
+         
+        });
       }
 
       document.getElementById("update").addEventListener("click",function(){
@@ -292,26 +282,27 @@
         var image = document.getElementById("oldLink").value;
         var key = document.getElementById("key").value;
 
-
         if(name == "" || num == "" || dob == "" || position == ""){
           alert("Please enter all fields");
         }
         else{
-          var playersItem = localStorage.getItem("players");
-          var playersArr = JSON.parse(playersItem);
-          var p = playersArr[key];
-          
-          p.name = name;
-          p.num = num;
-          p.dob = dob;
-          p.position = position;
+          firebase.database().ref('teams/'+teamid+'/players/'+key).update({
+            name: name,
+            num: num,
+            dob: dob,
+            position: position
+          });
+          var playerRef = firebase.database().ref('teams/'+teamid+'/players/'+key);
+            playerRef.child(key).once('value').then(function(snap) {
+            var data = snap.val();
+            console.log(data);
+            /*data.bookInfo.bookTitle = newTitle;
 
-          if(image){
-            p.img = image;
-          }
-
-          localStorage.setItem("players",JSON.stringify(playersArr));
-          
+            var update = {};
+            update[oldTitle] = null;
+            update[newTitle] = data;
+            return booksRef.update(update);*/
+          });
           $('#editModal').modal('hide');
           window.location.reload();
         }
