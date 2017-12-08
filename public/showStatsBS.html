@@ -17,7 +17,7 @@
         <div class="row justify-content-end">
             <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
         </div>
-        <h1 class="text-center">Team 1</h1>
+        <h1 id="teamHeader" class="text-center">Team 1</h1>
         
         <ul class="nav nav-pills nav-justified border border-dark">  
             <li class="nav-item">
@@ -135,12 +135,16 @@
             //session variables for use
             let username = sessionStorage.getItem("username");
             let teamID = sessionStorage.getItem("currentTeam");
+            let teamName = sessionStore.getItem("teamName");
 
             //firebase reference
             let playersRef = db.ref('teams/22/players');//('teams/' + teamID + '/players');
             
             //loads initial page with data from database
             window.addEventListener('DOMContentLoaded', function () {       
+                let header = document.getElementById('teamHeader');
+                header.innerHTML = 'Team ' + teamName;
+        
                 // get the template view
                 let t = document.querySelector('#statsRow');
                 var tb = document.querySelector("tbody");
