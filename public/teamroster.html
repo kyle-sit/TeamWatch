@@ -182,7 +182,7 @@
     
     <br>
     <script>
-      var config = {
+      /*var config = {
           apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
           authDomain: "teamsnipelk.firebaseapp.com",
           databaseURL: "https://teamsnipelk.firebaseio.com",
@@ -304,6 +304,7 @@
           playerRef.on('value',function(snap) {
             var data = snap.val();
             console.log(data);
+<<<<<<< HEAD
             data.name = name;
             data.num = num;
             data.dob = dob;
@@ -313,11 +314,13 @@
             if(data.num != snap.val().num){
               firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
             }
+=======
+>>>>>>> 444888a0fc6a9f9c62330c232a7b64b80cdf6e7f
           });
           $('#editModal').modal('hide');
           window.location.reload();
         }
-      });
+      });*/
 
       document.getElementById("logout").addEventListener("click",function(){
         firebase.auth().signOut().then(function() {

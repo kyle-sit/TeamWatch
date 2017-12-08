@@ -11,10 +11,13 @@
     <title>Game Page</title>
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" rel="stylesheet">
-    <script type="text/javascript" src="classes.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
     
   </head>
   <body>
+    <div class="row justify-content-end">
+        <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+    </div>
   	<h1 class="text-center mt-2">
   		<a id = "teamName" href="teamschedule.html">Team 1</a>
   	</h1>
@@ -29,13 +32,14 @@
                     <option value="Foul">Foul</option>
                     <option value="RC">Red Card</option>
                     <option value="YC">Yellow Card</option>
-                    <option value="SoG">Shots on Goal</option>
+                    <option value="SoG">Missed Shot on Goal</option>
                     <option value="CK">Corner Kick</option>
                     <option value="GK">Goal Kick</option>
+                    <option value="GA">Opponent Scored</option>
                 </select>
           </div>
       <div class="form-group">	
-        <input type="text" id="player" placeholder="Enter Player" class="form-control w-75 border mx-auto"><br>
+        <input type="number" id="player" placeholder="Enter Jersey Number" class="form-control w-75 border mx-auto"><br>
         <div class="row">
           <button id="submitStat" type="button" value="Submit" class="btn-info mb-4 mx-auto">Add Event</button> 
         </div>
@@ -49,94 +53,142 @@
        <p class="bg-info w-75 text-white p-2 mx-auto text-center">Jimmy Joe #12 scored a goal</p>
     </template>
     
-    <script>
+    <script type="module">
+        //import {db} from './firebaseModule.js';    
+            
+        const config = {
+            apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+            authDomain: "teamsnipelk.firebaseapp.com",
+            databaseURL: "https://teamsnipelk.firebaseio.com",
+            projectId: "teamsnipelk",
+            storageBucket: "teamsnipelk.appspot.com",
+            messagingSenderId: "941340425394"
+        };
+        firebase.initializeApp(config);
+        var db = firebase.database();
+            
+        /*if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(function() {
+                    console.log("Service Worker Registered");
+                }).catch(function() {
+                    console.log("Service Worker Not Registered");
+                });
+            });
+        }*/
+
+        //pulling session variables for use    
+        let username = sessionStorage.getItem("username");
+        //let currentGame = sessionStorage.getItem("currentGame");
+        let currentGame = 1;
+        let teamID = sessionStorage.getItem("currentTeam");
+        
+        //loads the page initially
         window.addEventListener('DOMContentLoaded', function () {       
             var team = document.querySelector('#teamName');
-            team.textContent = sessionStorage.getItem("currentTeam");
+            team.textContent = sessionStorage.getItem("teamID");
             
             var game = document.querySelector("h2");
-            game.textContent = sessionStorage.getItem("currentGame");
-        
-            var games = localStorage.getItem("games");
-            var gamesArray;
-            if (!games){
-                gamesArray = [];
-            } else {
-                gamesArray = JSON.parse(game);
-            }
-                
+            game.textContent = sessionStorage.getItem("currentGame");      
         });
         
-        let games = localStorage.getItem("games");
-        var gamesArray = JSON.parse(games);
-        
-        let playersItem = localStorage.getItem("players");
-        var playersArray = JSON.parse(playersItem);
-        
+        //onclick for submitting stats
         document.getElementById("submitStat").addEventListener("click",function() {
+            //getting stat to upload
             var s = document.getElementById("liveStat");
             var stat = s.options[s.selectedIndex].value;     
-            let playerName = document.getElementById('player').value;
-            var pickedPlayer;
+            let playerNumber = document.getElementById('player').value;
             
-            for (var key in playersArray){
-                let player = playersArray[key];
-                if(player.name == playerName) {
-                    pickedPlayer = key;
-                }
-                console.log(player.name);
-            }
-            
-            console.log(playersArray[pickedPlayer]);
-            
+            //getting html pieces to change
             let t = document.querySelector('#liveUpdate');
             var list = document.querySelector('#incomingStats');
             var p = t.content.querySelector('p');
             
-            if (stat == "Goal") {
-                playersArray[pickedPlayer].goals += 1;
-                playersArray[pickedPlayer].SoG += 1;
-                p.textContent = playerName + " scored a goal!";
-            } else if (stat == "PKMade"){
-                playersArray[pickedPlayer].goals += 1;
-                playersArray[pickedPlayer].PKs += 1;
-                playersArray[pickedPlayer].SoG += 1;
-                p.textContent = playerName + " scored a penalty kick!";
-            } else if (stat == "PKMissed"){
-                playersArray[pickedPlayer].PKs += 1;
-                playersArray[pickedPlayer].SoG += 1;
-                p.textContent = playerName + " missed a penalty kick!";
-            } else if (stat == "SoG"){
-                playersArray[pickedPlayer].SoG += 1;
-                p.textContent = playerName + " missed a shot!";
-            } else if (stat == "Foul"){
-                playersArray[pickedPlayer].fouls += 1;
-                p.textContent = playerName + " committed a foul!";
-            } else if (stat == "RC" ) {
-                playersArray[pickedPlayer].fouls += 1;
-                p.textContent = playerName + " received a red card!";
-            } else if (stat == "YC" ) {
-                playersArray[pickedPlayer].fouls += 1;
-                p.textContent = playerName + " received a yellow card!";
-            } else if (stat == "GK" ) {
-                p.textContent = playerName + " took a goal kick!";
-            } else if (stat == "CK" ) {
-                p.textContent = playerName + " took a corner kick!";
-            } 
+            //firebase references for updating and reading
+            let playerRef = db.ref('teams/22/players/' + playerNumber);
+            let gameRef = db.ref('teams/22/games/' + currentGame)
             
-            //p.textContent = player + " took a corner kick!";
-             
-            
-            // clone it make sure it is deep - the true part
-            let clone = document.importNode(t.content, true);
-        
-            // add it to the view
-            list.appendChild(clone);
-            
-            //reset players stats in storage
-            localStorage.setItem("players",JSON.stringify(playersArray));
+            //games snapshot for updating score
+            db.ref('teams/22/games/' + currentGame)
+                    .once('value').then(function(gamesnapshot) { 
+                        var game = gamesnapshot.val();
+                        //function on datasnapshot that updates database according to stat chosen
+                        db.ref('teams/22/players/' + playerNumber)
+                                .once('value').then(function(snapshot) { 
+                                    var player = snapshot.val();
+                                    if (stat == "Goal") {
+                                        playerRef.update({
+                                            goals: Number(player.goals) + 1,
+                                            SoG: Number(player.SoG) + 1
+                                        });
+                                        gameRef.update({
+                                            goalsFor: Number(game.goalsFor) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " scored a goal!";
+                                    } else if (stat == "PKMade"){
+                                        playerRef.update({
+                                            goals: Number(player.goals) + 1,
+                                            SoG: Number(player.SoG) + 1,
+                                            PKs: Number(player.PKs) + 1
+                                        });
+                                        gameRef.update({
+                                            goalsFor: Number(game.goalsFor) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " scored a penalty kick!";
+                                    } else if (stat == "PKMissed"){
+                                        playerRef.update({
+                                            SoG: Number(player.SoG) + 1,
+                                            PKs: Number(player.PKs) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " missed a penalty kick!";
+                                    } else if (stat == "SoG"){
+                                        playerRef.update({
+                                            SoG: Number(player.SoG) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " missed a shot!";
+                                    } else if (stat == "Foul"){
+                                        playerRef.update({
+                                            fouls: Number(player.fouls) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " committed a foul!";
+                                    } else if (stat == "RC" ) {
+                                        playerRef.update({
+                                            fouls: Number(player.fouls) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " received a red card!";
+                                    } else if (stat == "YC" ) {
+                                        playerRef.update({
+                                            fouls: Number(player.fouls) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " received a yellow card!";
+                                    } else if (stat == "GK" ) {
+                                        p.textContent = "#" + playerNumber + " took a goal kick!";
+                                    } else if (stat == "CK" ) {
+                                        p.textContent = "#" + playerNumber + " took a corner kick!";
+                                    } else if (stat == "GA" ) {
+                                        gameRef.update({
+                                            goalsAgainst: Number(game.goalsAgainst) + 1
+                                        });
+                                        p.textContent = "#" + playerNumber + " scored against us!";
+                                    } 
+
+                                    // clone it make sure it is deep - the true part
+                                    let clone = document.importNode(t.content, true);
+
+                                    // add it to the view
+                                    list.appendChild(clone);
+                                });
+                    });
 
         });
+        
+            document.getElementById("logout").addEventListener("click",function(){
+                firebase.auth().signOut().then(function() {
+                    console.log("logout");
+                }, function(error) {
+                    console.log("no logout");
+                });
+            });
     </script>
     
     <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Flivegame.html">W3 Validator</a></p>

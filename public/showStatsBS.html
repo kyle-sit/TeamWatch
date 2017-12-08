@@ -8,12 +8,15 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Show Statistics Page</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+        <link rel="manifest" href="manifest.json">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="classes.js"></script>
+        <script src="modal.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
     </head>
     <body>
+        <div class="row justify-content-end">
+            <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+        </div>
         <h1 class="text-center">Team 1</h1>
         
         <ul class="nav nav-pills nav-justified border border-dark">  
@@ -37,13 +40,14 @@
                     <th scope="col">Penalty Kicks</th>
                     <th scope="col">Games Played</th>
                     <th scope="col">Fouls</th>
-                    <th scope="col">Edit</th>
                 </tr>
             </thead>
             <tbody>
                <!-- data filled here through template -->
             </tbody>
         </table>
+        
+        <button class="span4 proj-div" data-toggle="modal" data-target="#playerModal">Edit Player</button>
         
         <template id= "statsRow">
             <tr>
@@ -53,11 +57,8 @@
                 <td>PKs</td>
                 <td>GP</td>
                 <td>Fouls</td>
-                <td>Button</td>
             </tr>
         </template>
-        
-        <!--<button class="span4 proj-div" data-toggle="modal" data-target="#playerModal">edit</button>-->
         
         <!-- Modal Popup for editing stats-->
         <div id="playerModal" class="modal fade">
@@ -67,8 +68,13 @@
                 <h3 id="playerModalLabel">Edit Player</h3>
             </div>
             <div class="modal-body">
-                <h6> Only enter values for fields you wish to update.</h6>
+                <h6> Fields left empty will be assumed 0.</h6>
                 <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="jerseyNum">Jersey Number of Player to Edit</label>
+                        <input type="number" class="form-control" id="jerseyNum" placeholder="jerseyNum">
+                    </div>
+                    
                     <div class="form-group">
                         <label for="goals">Goals</label>
                         <input type="number" class="form-control" id="goals" placeholder="Goals">
@@ -97,52 +103,172 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary btn-info" onclick="submitStats()">Save</button> 
+                <button id="save" type="button" class="btn btn-primary btn-info" data-dismiss="modal">Save</button> 
             </div>
             </div>
             </div>
         </div>
         
-        <script type="text/javascript">           
-            /*editStats() {
-                $('#playerModal').modal('show');
-            }
+        <script type="module">
+            //import {db} from '../firebaseModule.js';
+            const config = {
+                apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+                authDomain: "teamsnipelk.firebaseapp.com",
+                databaseURL: "https://teamsnipelk.firebaseio.com",
+                projectId: "teamsnipelk",
+                storageBucket: "teamsnipelk.appspot.com",
+                messagingSenderId: "941340425394"
+            };
+            firebase.initializeApp(config);
+            var db = firebase.database();
             
-            submitStats() {
-                
+            /*if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').then(function() {
+                        console.log("Service Worker Registered");
+                    }).catch(function() {
+                        console.log("Service Worker Not Registered");
+                    });
+                });
             }*/
             
-            window.addEventListener('DOMContentLoaded', function () {       
-                let playersItem = localStorage.getItem("players");
-                let playersArray = JSON.parse(playersItem);
+            //session variables for use
+            let username = sessionStorage.getItem("username");
+            let teamID = sessionStorage.getItem("currentTeam");
+
+            //firebase reference
+            let playersRef = db.ref('teams/22/players');//('teams/' + teamID + '/players');
             
+            //loads initial page with data from database
+            window.addEventListener('DOMContentLoaded', function () {       
                 // get the template view
                 let t = document.querySelector('#statsRow');
                 var tb = document.querySelector("tbody");
                 
                 var th = t.content.querySelector('th');
                 var td = t.content.querySelectorAll('td');
-                
-                for (var key in playersArray){
-                    let player = playersArray[key];
-                    th.textContent = player["name"];
-                    td[0].textContent = player["goals"];
-                    td[1].textContent = player["SoG"];
-                    td[2].textContent = player["PKs"];
-                    td[3].textContent = player["GP"];
-                    td[4].textContent = player["fouls"];
-                    td[5].innerHTML = '<button data-toggle="modal" data-target="#playerModal">edit</button>';
-
-                    // clone it make sure it is deep - the true part
-                    let clonedTemplate = document.importNode(t.content, true);
         
-                    // add it to the view
-                    tb.appendChild(clonedTemplate);
+                //set each table row using template and data from snapshot
+                playersRef.on('value', function(snapshot) {
+                    //delete initial rows
+                    while(tb.rows.length > 0) {
+                        tb.deleteRow(0);
+                    }
+                    //loop through players and set each row
+                    snapshot.forEach (function(player) {                            
+                        th.textContent = player.val().name + ' #' + player.val().num;
+                        td[0].textContent = player.val().goals;
+                        td[1].textContent = player.val().SoG;
+                        td[2].textContent = player.val().PKs;
+                        td[3].textContent = player.val().GP;
+                        td[4].textContent = player.val().fouls;
+                                                
+                        // clone it make sure it is deep - the true part
+                        let clonedTemplate = document.importNode(t.content, true);
+        
+                        // add it to the view
+                        tb.appendChild(clonedTemplate);
+                    });
+                });
+                
+            });
+            
+            document.getElementById("logout").addEventListener("click",function(){
+                firebase.auth().signOut().then(function() {
+                    console.log("logout");
+                }, function(error) {
+                    console.log("no logout");
+                });
+            });
+            
+            document.getElementById("save").addEventListener("click",function(){
+                //grab html values
+                let jerNum = document.getElementById('jerseyNum').value;
+                let goals = document.getElementById('goals').value;
+                let SoG = document.getElementById('SoG').value;
+                let PKs = document.getElementById('PKs').value;
+                let GP = document.getElementById('GP').value;
+                let fouls = document.getElementById('fouls').value;
+                
+                //if checks for unchanged fields
+                if(goals == "") {
+                    goals = 0;
                 }
-
+                if(SoG == "") {
+                    SoG = 0;
+                }
+                if(PKs == "") {
+                    PKs = 0;
+                }
+                if(GP == "") {
+                    GP = 0;
+                }
+                if(fouls == "") {
+                    fouls = 0;
+                }
+                
+                if(jerNum == "") {
+                    alert('Need to enter the jersey number of player to edit.');
+                }
+                //update the database
+                else {
+                    let playerRef = db.ref('teams/22/players/' + jerNum);
+                    playerRef.update({
+                                    goals: goals,
+                                    SoG: SoG,
+                                    PKs: PKs,
+                                    GP: GP,
+                                    fouls: fouls
+                              });
+                }
             });
             
         </script>
+        
+        <!--<script type="text/javascript">
+            //function called on submitting edit player modal
+            function submitStats() {
+                //grab html values
+                let jerNum = document.getElementById('jerseyNum').value;
+                let goals = document.getElementById('goals').value;
+                let SoG = document.getElementById('SoG').value;
+                let PKs = document.getElementById('PKs').value;
+                let GP = document.getElementById('GP').value;
+                let fouls = document.getElementById('fouls').value;
+                
+                //if checks for unchanged fields
+                if(goals == "") {
+                    goals = 0;
+                }
+                if(SoG == "") {
+                    SoG = 0;
+                }
+                if(PKs == "") {
+                    PKs = 0;
+                }
+                if(GP == "") {
+                    GP = 0;
+                }
+                if(fouls == "") {
+                    fouls = 0;
+                }
+                
+                if(jerNum == "") {
+                    alert('Need to enter the jersey number of player to edit.');
+                }
+                //update the database
+                else {
+                    let playerRef = firebase.database().ref('teams/snakes/players/' + jerNum);
+                    playerRef.update({
+                                    goals: goals,
+                                    SoG: SoG,
+                                    PKs: PKs,
+                                    GP: GP,
+                                    fouls: fouls
+                              });
+                }
+            }
+        </script>-->
         
         <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2FshowStatsBS.html">W3 Validator</a></p>
         
