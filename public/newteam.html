@@ -71,6 +71,65 @@
 			align-items: center;
 		}
 	</style>
+	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+	<script>
+		var config = {
+		apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+		authDomain: "teamsnipelk.firebaseapp.com",
+		databaseURL: "https://teamsnipelk.firebaseio.com",
+		projectId: "teamsnipelk",
+		storageBucket: "teamsnipelk.appspot.com",
+		messagingSenderId: "941340425394"
+		};
+		firebase.initializeApp(config);
+		
+		var db = firebase.database();
+		var storageRef = firebase.storage().ref();
+		
+		var email = "default";
+		
+		firebase.auth().onAuthStateChanged(function(user) {
+			email = user.email;
+		});
+		
+		
+		function addTeam() {
+			var teamname = document.getElementById("teamname").value;
+			var captain = document.getElementById("captain").value;
+			var level = document.getElementById("level").value;
+			var file = document.querySelector('input[type=file]').files[0];
+			
+			if (teamname == "" || captain == "" || level == "" || file == null	) {
+				alert("Please enter all the fields.");
+				return false;
+			}
+			
+			
+			var imageName = file.name;
+			var imageRef = storageRef.child("/teams/" + imageName);
+			console.log(imageName);
+			
+			var uploadTask = imageRef.put(file);
+			
+			var counterRef = firebase.database().ref();
+			counterRef.once('value').then(function(snapshot) {
+				var teamid = snapshot.val().teamcounter + 1;
+				console.log(teamid);
+				counterRef.update({
+					teamcounter: teamid
+				});
+				firebase.database().ref('teams/' + teamid).set({
+					username: email,
+					teamname: teamname,
+					captain: captain,
+					level: level,
+					imagename: imageName
+				});
+				alert("Team added! Go back to the team page, or add another.");
+				
+			});
+		}
+	</script>
 </head>
 <body>
 	<div class="container">
@@ -108,44 +167,19 @@
 					<br>
 					<label for="picture">Team Picture</label>
 					<div class="input-group">
-						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input id="picture" type="text" class="form-control" placeholder="Picture URL">
+						<input id="picture" type="file" name="pic" accept="image/*">
 					</div>
 					<br><br>
 					<div class="form-group in">
-						<input type="submit" class="btn btn info btn-block" value="Add Team" onclick="addTeam()">
+						<button type="button" class="btn btn info btn-block" onclick="addTeam()">Add Team</button>
+						<a href="teams.html">Click here to go back to teams.</a>
 					</div>
 				</form>
-				<script>
-					function addTeam() {
-						var teamname = document.getElementById("teamname").value;
-						var captain = document.getElementById("captain").value;
-						var level = document.getElementById("level").value;
-						var picture = document.getElementById("picture").value;
-						if (teamname == "" || captain == "" || level == "" || picture == "") {
-							alert("Please enter all the fields.");
-						}
-						else {
-							var values = [captain, level, picture];
-							
-							if (localStorage.getItem("teams") === null) {
-								var a = [];
-								var emptyArray = JSON.stringify(a);
-								localStorage.setItem("teams", emptyArray);
-							}
-							
-							var teamArray = JSON.parse(localStorage.getItem("teams"));
-							teamArray = teamArray.concat([teamname]);
-							localStorage.setItem("teams", JSON.stringify(teamArray));
-							
-							localStorage.setItem(teamname, JSON.stringify(values));
-							document.getElementById("form").action = "teams.html";
-						}
-					}
-					
-				</script>
+				
 			</div>
+					
 		</div>
+		
 	</div>
 
 	<p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Fnewteam.html">W3 Validator</a></p>

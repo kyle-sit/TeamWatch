@@ -116,15 +116,11 @@
 			
 			firebase.auth().onAuthStateChanged(function(user) {
 				if(user) {
-					user.username = un;
-					user.password = pw;
-					user.firstname = fn;
-					user.lastname = ln;
-					user.role = r;
-					user.teams = [];
 					window.location = "teams.html";
 				}
 			});
+			
+			
 		}
 	</script>
 </head>
