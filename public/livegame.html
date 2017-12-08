@@ -78,18 +78,18 @@
         }*/
 
         //pulling session variables for use    
+        let currentGame = sessionStorage.getItem("currentGame");
         let username = sessionStorage.getItem("username");
-        //let currentGame = sessionStorage.getItem("currentGame");
-        let currentGame = 1;
-        let teamID = sessionStorage.getItem("currentTeam");
+        let teamID = sessionStorage.getItem("teamid");
+        let teamName = sessionStorage.getItem("currentTeam");
         
         //loads the page initially
         window.addEventListener('DOMContentLoaded', function () {       
             var team = document.querySelector('#teamName');
-            team.textContent = sessionStorage.getItem("teamID");
+            team.textContent = teamName;
             
             var game = document.querySelector("h2");
-            game.textContent = sessionStorage.getItem("currentGame");      
+            game.textContent = currentGame;      
         });
         
         //onclick for submitting stats
@@ -105,15 +105,15 @@
             var p = t.content.querySelector('p');
             
             //firebase references for updating and reading
-            let playerRef = db.ref('teams/22/players/' + playerNumber);
-            let gameRef = db.ref('teams/22/games/' + currentGame)
+            let playerRef = db.ref('teams/' teamID + '/players/' + playerNumber);
+            let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame)
             
             //games snapshot for updating score
-            db.ref('teams/22/games/' + currentGame)
+            db.ref('teams/' + teamID + '/games/' + currentGame)
                     .once('value').then(function(gamesnapshot) { 
                         var game = gamesnapshot.val();
                         //function on datasnapshot that updates database according to stat chosen
-                        db.ref('teams/22/players/' + playerNumber)
+                        db.ref('teams/' teamID + '/players/' + playerNumber)
                                 .once('value').then(function(snapshot) { 
                                     var player = snapshot.val();
                                     if (stat == "Goal") {

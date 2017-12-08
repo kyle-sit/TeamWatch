@@ -134,11 +134,11 @@
             
             //session variables for use
             let username = sessionStorage.getItem("username");
-            let teamID = sessionStorage.getItem("currentTeam");
-            let teamName = sessionStore.getItem("teamName");
+            let teamID = sessionStorage.getItem("teamid");
+            let teamName = sessionStorage.getItem("currentTeam");
 
             //firebase reference
-            let playersRef = db.ref('teams/22/players');//('teams/' + teamID + '/players');
+            let playersRef = db.ref('teams/' + teamID + '/players');
             
             //loads initial page with data from database
             window.addEventListener('DOMContentLoaded', function () {       
@@ -216,7 +216,7 @@
                 }
                 //update the database
                 else {
-                    let playerRef = db.ref('teams/22/players/' + jerNum);
+                    let playerRef = db.ref('teams/' + teamID + '/players/' + jerNum);
                     playerRef.update({
                                     goals: goals,
                                     SoG: SoG,
