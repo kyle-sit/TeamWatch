@@ -4,9 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Project 4</title>
+    <link rel="manifest" href="manifest.json">
   </head>
   <body>
       <h1>Project 4 using BootStraps and JavaScript</h1>
           <p><a href="login.html">Login Page</a></p>
+          <p><a href="showStatsBS.html">stats</a></p>
+          
+      <script>
+        if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                .then(function(registration) {
+                console.log('Service Worker Registered');
+            });
+            navigator.serviceWorker.ready.then(function(registration) {
+                console.log('Service Worker Ready');
+            });
+        }
+     </script>
   </body>
 </html>
