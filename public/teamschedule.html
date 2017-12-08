@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -13,13 +12,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="classes.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>-->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>-->
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+    <script type="text/javascript" src="modal.js"></script>
 
   </head>
   <body>
-    <h1 class="text-center">Team 1</h1>
+    <div class="row justify-content-end">
+      <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+    </div>
+    <h1 class="text-center" id="team"> </h1>
     <ul class="nav nav-pills nav-justified border border-dark">  
       <li class="nav-item">
         <a class="nav-link text-info" href="teamroster.html">Roster</a>
@@ -166,6 +169,18 @@
     </template>
 
           <script>
+            var config = {
+              apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+              authDomain: "teamsnipelk.firebaseapp.com",
+              databaseURL: "https://teamsnipelk.firebaseio.com",
+              projectId: "teamsnipelk",
+              storageBucket: "teamsnipelk.appspot.com",
+              messagingSenderId: "941340425394"
+            };
+            firebase.initializeApp(config);
+
+            var teamid = "4";
+
             document.getElementById("save").addEventListener("click",function(){
               var oppName = document.getElementById("oppName").value;
               var home = document.getElementById("homeGame").value;
@@ -175,81 +190,75 @@
               var tscore = document.getElementById("tscore").value;
               var oscore = document.getElementById("oscore").value;
 
-              if(oppName == "" || home == "" || date == "" || time == "" || location == "" || tscore == "" || oscore == "" ) {
+              if(oppName == "" || home == "" || date == "" || time == "" || location == "") {
                   alert("Please enter all fields");
               }
               else{
-                let g = new Game(oppName,home,date,time,location,tscore,oscore);
-                var game = localStorage.getItem("games");
-                var gamesArr;
-                if (!game){
-                  gamesArr = [];
-                } else {
-                  gamesArr = JSON.parse(game);
-                }
-                gamesArr.push(g);
-                localStorage.setItem("games",JSON.stringify(gamesArr));
-                for (var key in gamesArr){
-                  console.log(JSON.stringify(gamesArr[key]));
-                }$('#gameModal').modal('hide');
+                firebase.database().ref('teams/'+teamid+'/games/'+date+time).set({
+                  oppName: oppName,
+                  home: home,
+                  date: date,
+                  time: time,
+                  location: location,
+                  tscore: tscore,
+                  oscore: oscore
+                });
+                $('#gameModal').modal('hide');
                 window.location.reload();
               }
             });
 
             window.addEventListener('DOMContentLoaded', function() {
-              let game = localStorage.getItem("games");
-              let gameArr = JSON.parse(game);
-              var markup = "";
               var gameList = document.querySelector("#gameList");
               let t = document.querySelector('#gameRow');
               var h5 = t.content.querySelector('h5');
               var p = t.content.querySelector('p');
               var span = t.content.querySelector('span');
-              for (var key in gameArr){
-                var k = String(key);
-                let a = gameArr[key];
-                h5.innerHTML = a.home + " vs " + a.oppName;
-                p.innerHTML = a.date + " " + a.time + " at " + a.location;
-                span.innerHTML =  a.tscore + " - " + a.oscore;
-                
-                t.content.querySelector("#remove").setAttribute('onclick', "deleteGame("+k+");");
-                t.content.querySelector("#livegame").setAttribute('onclick',"livegame(\""+k+"\");");
-                t.content.querySelector("#edit").setAttribute('onclick', "editGame(\""+k+"\");");
-                var clone = document.importNode(t.content, true);
-                gameList.appendChild(clone);
-              }
+              var teamname = document.querySelector('#team');
+
+              firebase.database().ref('teams/'+teamid).on('value',function(snapshot){
+                teamname.innerHTML = "Team " + snapshot.val().teamname;
+              });
+
+              firebase.database().ref('teams/'+teamid+'/games/').on('value',function(games){
+                games.forEach(function(game){
+                  h5.innerHTML = game.val().home + " vs " + game.val().oppName;
+                  p.innerHTML = game.val().date + " " + game.val().time + " at " + game.val().location;
+                  span.innerHTML =  game.val().tscore + " - " + game.val().oscore;
+               
+                  t.content.querySelector("#remove").setAttribute('onclick', "deleteGame(\""+game.val().date+game.val().time+"\");");
+                  t.content.querySelector("#livegame").setAttribute('onclick',"livegame(\""+game.val().date+game.val().time+"\");");
+                  t.content.querySelector("#edit").setAttribute('onclick', "editGame(\""+game.val().date+game.val().time+"\");");
+                  var clone = document.importNode(t.content, true);
+                  gameList.appendChild(clone);
+                });
+              });
             });
 
             function deleteGame(key) {
-              let gamesItem = localStorage.getItem("games");
-              let gamesArr = JSON.parse(gamesItem);
-              localStorage.removeItem(key);
-              gamesArr.splice(key,1);
-              localStorage.setItem("games", JSON.stringify(gamesArr));
+              firebase.database().ref('teams/'+teamid+'/games/'+key).remove();
               window.location.reload();
             }
 
             function editGame(key) {
-              let gamesItem = localStorage.getItem("games");
-              let gamesArr = JSON.parse(gamesItem);
-              let game = gamesArr[key];
+              firebase.database().ref('teams/'+teamid+'/games/'+key).on('value',function(game){
+                var oldTeam = game.val().oppName;
+                var oldHome = game.val().home;
+                var oldDate = game.val().date;
+                var oldTime = game.val().time;
+                var oldLoc = game.val().location;
+                var oldT = game.val().tscore;
+                var oldS = game.val().oscore;
 
-              var oldTeam = game.oppName;
-              var oldHome = game.home;
-              var oldDate = game.date;
-              var oldTime = game.time;
-              var oldLoc = game.location;
-              var oldT = game.tscore;
-              var oldS = game.oscore;
-
-              document.getElementById("oldTeam").value = oldTeam;
-              document.getElementById("oldHome").value = oldHome;
-              document.getElementById("oldDate").value = oldDate;
-              document.getElementById("oldTime").value = oldTime;
-              document.getElementById("oldLoc").value = oldLoc;
-              document.getElementById("oldT").value = oldT;
-              document.getElementById("oldS").value = oldS;
-              document.getElementById("key").value = key;
+                document.getElementById("oldTeam").value = oldTeam;
+                document.getElementById("oldHome").value = oldHome;
+                document.getElementById("oldDate").value = oldDate;
+                document.getElementById("oldTime").value = oldTime;
+                document.getElementById("oldLoc").value = oldLoc;
+                document.getElementById("oldT").value = oldT;
+                document.getElementById("oldS").value = oldS;
+                document.getElementById("key").value = key;
+              });
             }
 
             document.getElementById("update").addEventListener("click",function(){
@@ -261,28 +270,36 @@
               var tscore = document.getElementById("oldT").value;
               var oscore = document.getElementById("oldS").value;
               var key = document.getElementById("key").value;
+              console.log(key);
 
               if(oppName == "" || home == "" || date == "" || time == "" || location == "" || tscore == "" || oscore == "" ) {
                   alert("Please enter all fields");
               }
               else{
-                var gamesItem = localStorage.getItem("games");
-                var gamesArr = JSON.parse(gamesItem);
-                var g = gamesArr[key];
-          
-                g.oppName = team;
-                g.home = home;
-                g.date = date;
-                g.time = time;
-                g.location = location;
-                g.tscore = tscore;
-                g.oscore = oscore;
-
-                localStorage.setItem("games",JSON.stringify(gamesArr));
+                var gameRef = firebase.database().ref('teams/'+teamid+'/games/'+key);
+                var games = firebase.database().ref('teams/'+teamid+'/games/'+date+time);
+                /*console.log(games.team);*/
+                gameRef.on('value',function(snap){
+                  var data = snap.val();
+                  /*console.log(data.team);*/
+                  data.oppName = team;
+                  data.home = home;
+                  data.date = date;
+                  data.time = time;
+                  data.location = location;
+                  data.tscore = tscore;
+                  data.oscore = oscore;
+                  games.update(data);
+                  
+                  if((snap.val().time != data.time) || (snap.val().date != data.date)){
+                    firebase.database().ref('teams/'+teamid+'/games/'+key).remove();
+                  }
+                });
           
                 $('#editModal').modal('hide');
                 window.location.reload();
               }
+              
             });
 
             function livegame(key) {
@@ -290,6 +307,13 @@
               sessionStorage.setItem("currentGame",key);
               document.location.href = "livegame.html";
             }
+          document.getElementById("logout").addEventListener("click",function(){
+            firebase.auth().signOut().then(function() {
+              console.log("logout");
+            }, function(error) {
+              console.log("no logout");
+            });
+          });
           </script>
 
 

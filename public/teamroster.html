@@ -12,15 +12,20 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!--<link rel="stylesheet" href="font-awesome.css">-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="classes.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>-->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>-->
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+    <script src="modal.js"></script>
+    
 
   </head>
   <body>
-    <h1 class="text-center mx-auto">Team 1</h1>
+    <div class="row justify-content-end">
+      <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+    </div>
+    <h1 class="text-center mx-auto" id="team"> </h1>
     <ul class="nav nav-pills nav-justified border border-dark">  
       <li class="nav-item">
         <a class="nav-link active bg-info" href="#">Roster</a>
@@ -71,11 +76,11 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="imgLink">Player Image Link</label>
-                <!-- FOR LATER: update to save image files
+                <label for="playerImg">Upload Player Image</label>
+      
                 <input type="file" name="playerImg" accept="image/*" id="playerImg">
-                -->
-                <input type="text" id="imgLink">
+
+                
               </div>
             </form>
           </div>
@@ -160,9 +165,7 @@
               <div class="form-group">
                 <label for="oldLink">Player Image Link</label>
                 <input type="text" id="oldLink">
-                <!-- FOR LATER: update to save image files
                 <input type="file" name="playerImg" accept="image/*" id="oldImg">
-                -->
               </div>
               <div class="form-group">
                 <input type="hidden" id="key">
@@ -189,20 +192,25 @@
         };
         firebase.initializeApp(config);
         var db = firebase.database();
+        var storageRef = firebase.storage().ref();
 
-        var username = sessionStorage.getItem("username");
-        username = "lynleymaster";
-        var teamid = "lions";
+        var teamid = "4";
 
       document.getElementById("save").addEventListener("click",function(){ 
         var name = document.getElementById("name").value;
         var num = document.getElementById("num").value;
         var dob = document.getElementById("dob").value;
         var position = document.getElementById("position").value;
-        var image = document.getElementById("imgLink").value;
-        var img;
+        var image = document.getElementById("playerImg").value;
+        var img, imgRef;
+
         if(image) {
-          img = image;
+          var thisRef = storageRef.child(image.name);
+
+          thisRef.put(image.name).then(function(snapshot){
+            console.log("uploaded");
+          });
+          
         }
 
         if(name == "" || num == "" || dob == "" || position == ""){
@@ -233,13 +241,19 @@
         var h2 = t.content.querySelector('h2');
         var h6 = t.content.querySelectorAll('h6');
         var image = t.content.querySelector('img');
+        let teamname = document.querySelector('#team');
 
-        firebase.database().ref('teams/'+teamid+'/players/').once('value',function(snapshot){
+        firebase.database().ref('teams/'+teamid).on('value',function(snapshot){
+          teamname.innerHTML = "Team " + snapshot.val().teamname;
+        });
+
+        firebase.database().ref('teams/'+teamid+'/players/').on('value',function(snapshot){
           snapshot.forEach(function(player){
             h2.innerHTML = player.val().name + " #" + player.val().num;
             h6[0].innerHTML = "DOB: " + player.val().dob;
             h6[1].innerHTML = "Position: " + player.val().position;
             h6[2].innerHTML = "ID: " + (++key);
+        
             if(player.img){
               image.src = player.img;
             }
@@ -260,7 +274,7 @@
       }
 
       function editPlayer(key) {
-        firebase.database().ref('teams/'+teamid+'/players/'+key).once('value',function(player){
+        firebase.database().ref('teams/'+teamid+'/players/'+key).on('value',function(player){
           var oldName = player.val().name;
           var oldNum = player.val().num;
           var oldDob = player.val().dob;
@@ -270,7 +284,6 @@
           document.getElementById("oldDob").value = oldDob;
           document.getElementById("oldPos").value = oldPos;
           document.getElementById("key").value = key;
-         
         });
       }
 
@@ -286,21 +299,36 @@
           alert("Please enter all fields");
         }
         else{
-          firebase.database().ref('teams/'+teamid+'/players/'+key).update({
-            name: name,
-            num: num,
-            dob: dob,
-            position: position
-          });
           var playerRef = firebase.database().ref('teams/'+teamid+'/players/'+key);
-            playerRef.child(key).once('value').then(function(snap) {
+          var players = firebase.database().ref('teams/'+teamid+'/players/'+num);
+          playerRef.on('value',function(snap) {
             var data = snap.val();
             console.log(data);
+<<<<<<< HEAD
+            data.name = name;
+            data.num = num;
+            data.dob = dob;
+            data.position = position;
+
+            players.update(data);
+            if(data.num != snap.val().num){
+              firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
+            }
+=======
+>>>>>>> 444888a0fc6a9f9c62330c232a7b64b80cdf6e7f
           });
           $('#editModal').modal('hide');
           window.location.reload();
         }
       });*/
+
+      document.getElementById("logout").addEventListener("click",function(){
+        firebase.auth().signOut().then(function() {
+          console.log("logout");
+        }, function(error) {
+          console.log("no logout");
+        });
+      });
 
 
     </script>
