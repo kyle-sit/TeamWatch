@@ -9,7 +9,7 @@
     <meta name="author" content="">
 
     <title>Game Page</title>
-
+    <link rel="manifest" href="manifest.json">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
     
@@ -56,12 +56,20 @@
        <p class="bg-info w-75 text-white p-2 mx-auto text-center">Jimmy Joe #12 scored a goal</p>
     </template>
     
-    <script type="module">
-        //import {db} from './firebaseModule.js';    
+    <script>
+        if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                .then(function(registration) {
+                console.log('Service Worker Registered');
+            });
+            navigator.serviceWorker.ready.then(function(registration) {
+                console.log('Service Worker Ready');
+            });
+        }
+        //import {db, auth} from './firebaseModule.js';    
             
         //pulling session variables for use    
         let currentGame = sessionStorage.getItem("currentGame");
-        let username = sessionStorage.getItem("username");
         let teamID = sessionStorage.getItem("teamid");
         let teamName = sessionStorage.getItem("currentTeam");
             
@@ -87,7 +95,12 @@
             team.textContent = teamName;
             
             var game = document.querySelector("h2");
-            game.textContent = currentGame;      
+            game.textContent = currentGame;     
+            
+            gameRef.update({
+                goalsFor: 0,
+                goalsAgainst: 0
+            });
         });
         
         //onclick for submitting stats
@@ -105,14 +118,17 @@
             //firebase references for updating and reading
             let playerRef = db.ref('teams/' + teamID + '/players/' + playerNumber);
             
+            console.log(playerRef);
+            
             //games snapshot for updating score
             db.ref('teams/' + teamID + '/games/' + currentGame)
-                    .once('value').then(function(gamesnapshot) { 
+                    .once('value').then(function(gamesnapshot) {   
                         var game = gamesnapshot.val();
                         //function on datasnapshot that updates database according to stat chosen
                         db.ref('teams/' + teamID + '/players/' + playerNumber)
                                 .once('value').then(function(snapshot) { 
                                     var player = snapshot.val();
+                                    console.log(player);
                                     if (stat == "Goal") {
                                         playerRef.update({
                                             goals: Number(player.goals) + 1,
@@ -181,7 +197,7 @@
         
 		let teamRef = db.ref('teams/' + teamID);
 		
-        //onclick for submitting stats
+        //onclick for ending game
         document.getElementById("endGame").addEventListener("click",function() {
             db.ref('teams/' + teamID + '/games/' + currentGame)
                     .once('value').then(function(gamesnapshot) {
@@ -193,7 +209,7 @@
 							teamRef.update({
 								wins: wins
 							});
-                        } else if (games.goalsFor == game.goalsAgainst) {
+                        } else if (game.goalsFor == game.goalsAgainst) {
 							var ties = snapshot.val().ties + 1;
 							teamRef.update({
 								ties: ties
@@ -202,22 +218,23 @@
 							var losses = snapshot.val().losses + 1;
 							teamRef.update({
 								losses: losses
-							})
+							});
                         }
+                        document.location.href = 'teamschedule.html';
 					});
 			});
-            document.location.href = 'teamschedule.html';
         });
         
         //onclick for logout
         document.getElementById("logout").addEventListener("click",function(){
-            firebase.auth().signOut().then(function() {
+            fauth.signOut().then(function() {
                 console.log("logout");
                 document.location.href = 'login.html';
             }, function(error) {
                 console.log("no logout");
             });
         });
+        
     </script>
     
     <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Flivegame.html">W3 Validator</a></p>

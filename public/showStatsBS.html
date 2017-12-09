@@ -15,8 +15,10 @@
     </head>
     <body>
         <div class="row justify-content-end">
+            <button type="button" class="btn btn-info mt-2 mr-4" id="teams">Back to Teams</button>
             <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
         </div>
+        
         <h1 id="teamHeader" class="text-center">Team 1</h1>
         
         <ul class="nav nav-pills nav-justified border border-dark">  
@@ -109,8 +111,18 @@
             </div>
         </div>
         
-        <script type="module">
-            //import {db} from '../firebaseModule.js';
+        <script>
+            if('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then(function(registration) {
+                    console.log('Service Worker Registered');
+                });
+                navigator.serviceWorker.ready.then(function(registration) {
+                    console.log('Service Worker Ready');
+                });
+            }
+            
+            //import {db, auth} from './firebaseModule.js';
             const config = {
                 apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
                 authDomain: "teamsnipelk.firebaseapp.com",
@@ -169,11 +181,17 @@
             
             //onclick listener for logout
             document.getElementById("logout").addEventListener("click",function(){
-                firebase.auth().signOut().then(function() {
+                auth.signOut().then(function() {
+                    document.location.href = 'login.html';
                     console.log("logout");
                 }, function(error) {
                     console.log("no logout");
                 });
+            });
+            
+            //onclick listener for back to teams
+            document.getElementById("teams").addEventListener("click",function(){
+                document.location.href = 'teams.html';
             });
             
             //onclick listener for save

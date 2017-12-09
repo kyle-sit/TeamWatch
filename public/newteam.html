@@ -9,7 +9,8 @@
 	</title>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-	<style>
+	<link rel="manifest" href="manifest.json">
+        <style>
 		html {
 			width: 100%;
 			height: 100%;
@@ -73,6 +74,16 @@
 	</style>
 	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 	<script>	
+                if('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                        .then(function(registration) {
+                        console.log('Service Worker Registered');
+                    });
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        console.log('Service Worker Ready');
+                    });
+                }
+            
 		var config = {
 		apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
 		authDomain: "teamsnipelk.firebaseapp.com",
@@ -82,8 +93,10 @@
 		messagingSenderId: "941340425394"
 		};
 		firebase.initializeApp(config);
+    
+                //import {db, auth, storage} from './firebaseModule.js';
+                var db = firebase.database();
 		
-		var db = firebase.database();
 		var storageRef = firebase.storage().ref();
 		
 		var email = "default";
@@ -94,7 +107,7 @@
 		});
 		
 		// add a team to the database
-		function addTeam() {
+                document.getElementById("addTeam").addEventListener("click",function(){
 			var teamname = document.getElementById("teamname").value;
 			var captain = document.getElementById("captain").value;
 			var level = document.getElementById("level").value;
@@ -114,7 +127,7 @@
 			var uploadTask = imageRef.put(file);
 			
 			// check the current team id
-			var counterRef = firebase.database().ref();
+			var counterRef = db.ref();
 			counterRef.once('value').then(function(snapshot) {
 				var teamid = snapshot.val().teamcounter + 1;
 				console.log(teamid);
@@ -122,7 +135,7 @@
 					teamcounter: teamid
 				});
 				// update the database
-				firebase.database().ref('teams/' + teamid).set({
+				db.ref('teams/' + teamid).set({
 					username: email,
 					teamname: teamname,
 					captain: captain,
@@ -135,7 +148,7 @@
 				alert("Team added! Go back to the team page, or add another.");
 				
 			});
-		}
+		});
 	</script>
 </head>
 <body>
@@ -181,7 +194,7 @@
 					</div>
 					<br><br>
 					<div class="form-group in">
-						<button type="button" class="btn btn info btn-block" onclick="addTeam()">Add Team</button>
+						<button type="button" class="btn btn info btn-block" id="addTeam">Add Team</button>
 						<a href="teams.html">Click here to go back to teams.</a>
 					</div>
 				</form>

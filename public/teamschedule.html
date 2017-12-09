@@ -16,11 +16,12 @@
     <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>-->
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
     <script type="text/javascript" src="modal.js"></script>
-
+    <link rel="manifest" href="manifest.json">
   </head>
   <body>
     <div class="row justify-content-end">
       <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+      <button type="button" class="btn btn-info mt-2 mr-4" id="teams">Back to Teams</button>
     </div>
     <h1 class="text-center" id="team"> </h1>
     <ul class="nav nav-pills nav-justified border border-dark">  
@@ -169,6 +170,16 @@
     </template>
 
     <script>
+       if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                .then(function(registration) {
+                console.log('Service Worker Registered');
+            });
+            navigator.serviceWorker.ready.then(function(registration) {
+                console.log('Service Worker Ready');
+            });
+        }
+        
       var config = {
         apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
         authDomain: "teamsnipelk.firebaseapp.com",
@@ -178,6 +189,9 @@
         messagingSenderId: "941340425394"
       };
       firebase.initializeApp(config);
+    
+      //import {db, auth, storage} from './firebaseModule.js';
+      var db = firebase.database();
 
       var teamid = sessionStorage.getItem("teamid");
       var teamname = sessionStorage.getItem("currentTeam");
@@ -195,7 +209,7 @@
           alert("Please enter all fields");
         }
         else{
-          firebase.database().ref('teams/'+teamid+'/games').once('value',function(snapshot){
+          db.ref('teams/'+teamid+'/games').once('value',function(snapshot){
             let taken = false;
             snapshot.forEach(function(game){
               /* if game at same date and time */
@@ -206,7 +220,7 @@
             });
             /* add new game */
             if(!taken){
-              firebase.database().ref('teams/'+teamid+'/games/'+date+time).set({
+              db.ref('teams/'+teamid+'/games/'+date+time).set({
                 oppName: oppName,
                 home: home,
                 date: date,
@@ -233,7 +247,7 @@
 
         team.innerHTML = "Team " + teamname;
         /* add html content */
-        firebase.database().ref('teams/'+teamid+'/games/').on('value',function(games){
+        db.ref('teams/'+teamid+'/games/').on('value',function(games){
           games.forEach(function(game){
             h5.innerHTML = game.val().home + " vs " + game.val().oppName;
             p.innerHTML = game.val().date + " " + game.val().time + " at " + game.val().location;
@@ -249,12 +263,12 @@
       });
 
       function deleteGame(key) {
-        firebase.database().ref('teams/'+teamid+'/games/'+key).remove();
+        db.ref('teams/'+teamid+'/games/'+key).remove();
         window.location.reload();
       }
 
       function editGame(key) {
-        firebase.database().ref('teams/'+teamid+'/games/'+key).on('value',function(game){
+        db.ref('teams/'+teamid+'/games/'+key).on('value',function(game){
           var oldTeam = game.val().oppName;
           var oldHome = game.val().home;
           var oldDate = game.val().date;
@@ -288,13 +302,13 @@
           alert("Please enter all fields");
         }
         else{
-          var gameRef = firebase.database().ref('teams/'+teamid+'/games/'+key);
-          var games = firebase.database().ref('teams/'+teamid+'/games/'+date+time);
+          var gameRef = db.ref('teams/'+teamid+'/games/'+key);
+          var games = db.ref('teams/'+teamid+'/games/'+date+time);
           gameRef.on('value',function(snap){
             var data = snap.val();
             /* if date or time updated */
             if((snap.val().time != time) || (snap.val().date != date)){
-              firebase.database().ref('teams/'+teamid+'/games').once('value',function(game){
+              db.ref('teams/'+teamid+'/games').once('value',function(game){
                 let taken = false;
                 game.forEach(function(snapshot){
                   /* if game at same time and date */
@@ -314,7 +328,7 @@
                   data.goalsAgainst = goalsAgainst;
                   games.update(data);
                 
-                  firebase.database().ref('teams/'+teamid+'/games/'+key).remove();
+                  db.ref('teams/'+teamid+'/games/'+key).remove();
                   $('#editModal').modal('hide');
                   window.location.reload();
                 } 
@@ -335,12 +349,13 @@
         }
       });
 
+      //onclick for livegame button
       function livegame(key) {
-        sessionStorage.clear();
         sessionStorage.setItem("currentGame",key);
         document.location.href = "livegame.html";
       }
           
+      //onclick for logout    
       document.getElementById("logout").addEventListener("click",function(){
         firebase.auth().signOut().then(function() {
           console.log("logout");
@@ -348,6 +363,11 @@
         }, function(error) {
           console.log("no logout");
         });
+      });
+      
+      //onclick listener for back to teams
+      document.getElementById("teams").addEventListener("click",function(){
+          document.location.href = 'teams.html';
       });
     </script>
   </body>

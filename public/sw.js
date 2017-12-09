@@ -4,7 +4,6 @@ this.addEventListener('install', function(e) {
  e.waitUntil(
    caches.open('elk-data').then(function(cache) {
      return cache.addAll([
-       /*'/',
        '/index.html',
        '/editteam.html',
        '/firebaseModule.js',
@@ -17,9 +16,8 @@ this.addEventListener('install', function(e) {
        '/signup.html',
        '/teamroster.html',
        '/teams.html',
-       '/teamschedule.html'*/
-       '/index.html',
-       '/showStatsBS.html'
+       '/teamschedule.html',
+       '/manifest.json'
      ]);
    })
  );

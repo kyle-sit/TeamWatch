@@ -9,7 +9,8 @@
 	</title>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-	<style>
+	<link rel="manifest" href="manifest.json">
+        <style>
 		h1 {
 			text-align: center;
 		}
@@ -102,16 +103,16 @@
 		</div>
 	</div>
 	<script>
-		// logout button
-		document.getElementById("logout").addEventListener("click",function(){
-			firebase.auth().signOut().then(function() {
-			  console.log("logout");
-			  document.location.href = "login.html";
-			}, function(error) {
-			  console.log("no logout");
-			});
-		});
-	
+                if('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                        .then(function(registration) {
+                        console.log('Service Worker Registered');
+                    });
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        console.log('Service Worker Ready');
+                    });
+                }
+            
 		var config = {
 		apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
 		authDomain: "teamsnipelk.firebaseapp.com",
@@ -121,9 +122,10 @@
 		messagingSenderId: "941340425394"
 		};
 		firebase.initializeApp(config);
+    
+                var db = firebase.database();
 		
-		var storage = firebase.storage();
-		var storageRef = storage.ref('/teams/');
+		var storageRef = firebase.storage().ref('/teams/');
 		var imgarray = [];
 		var user = firebase.auth().currentUser;
 		
@@ -133,7 +135,7 @@
 		firebase.auth().onAuthStateChanged(function(user) {
 			if(user) {
 				
-				var teamsRef = firebase.database().ref("teams");
+				var teamsRef = db.ref("teams");
 				// iterate through the iteams that belong to the user
 				teamsRef.orderByChild("username").equalTo(user.email).on('value', function(snapshot) {
 					snapshot.forEach(function(data) {
@@ -186,13 +188,13 @@
 			
 		});
 		
-		var counterRef = firebase.database().ref();
+		var counterRef = db.ref();
 		var storageRef2 = firebase.storage().ref();
 		
 		// function to delete a team
 		function deleteTeam(key) {
-			var teamsRef = firebase.database().ref("teams");
-			var keyRef = firebase.database().ref("teams/" + key);
+			var teamsRef = db.ref("teams");
+			var keyRef = db.ref("teams/" + key);
 			keyRef.once('value').then(function(snapshot) {
 				var imagename = snapshot.val().imagename;
 				var imageRef = storageRef2.child('teams/' + imagename);
@@ -223,6 +225,16 @@
 			sessionStorage.setItem("currentTeam", name);
 			sessionStorage.setItem("teamid", id);
 		}
+                
+                // logout button
+		document.getElementById("logout").addEventListener("click",function(){
+			firebase.auth().signOut().then(function() {
+			  console.log("logout");
+			  document.location.href = "login.html";
+			}, function(error) {
+			  console.log("no logout");
+			});
+		});
 	</script>
 </body>
 </html>
