@@ -84,6 +84,7 @@
 		
 		var db = firebase.database();
 		
+		// register a new user
 		function register() {
 			var un = document.getElementById('username').value;
 			var pw = document.getElementById('password').value;
@@ -92,16 +93,19 @@
 			var r = document.getElementById('role').value;
 			//sessionStorage.setItem(username, password);
 			
+			// input check
 			if (un.length == 0 || pw.length == 0 || fn.length == 0 || ln.length == 0) {
 				alert("Please fill out all the fields.");
 				return false;
 			}
 			
+			// email check
 			function validateEmail(email) {
 				var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 				return re.test(email);
 			}
 			
+			// add a new user
 			if (validateEmail(un)) {
 				firebase.auth().createUserWithEmailAndPassword(un, pw).catch(function(error) {
 					var errorCode = error.code;

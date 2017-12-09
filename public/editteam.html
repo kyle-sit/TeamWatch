@@ -142,7 +142,7 @@
 						email = user.email;
 					});
 
-					
+					// grab the old values from the team
 					var teamRef = firebase.database().ref("teams/" + oldteamid);
 					teamRef.once('value').then(function(snapshot) {
 						console.log(snapshot.val());
@@ -159,6 +159,7 @@
 					
 					var storageRef2 = firebase.storage().ref();
 				
+					// edit the values of the team
 					function editTeam() {
 						
 						var teamname = document.getElementById("teamname").value;
@@ -166,13 +167,11 @@
 						var level = document.getElementById("level").value;
 						var file = document.querySelector('input[type=file]').files[0];
 						
+						// check inputs
 						if (teamname == "" || captain == "" || level == "" || file == null ) {
 							alert("Please enter all the fields.");
 						}
 						else {
-							/*var keyRef = firebase.database().ref("teams/" + oldteamid);
-							keyRef.once('value').then(function(snapshot) {
-								var imagename = snapshot.val().imagename;*/
 								var imageRef = storageRef2.child('teams/' + imagename);		
 								imageRef.delete().then(function() {
 								  // File deleted successfully
@@ -187,6 +186,7 @@
 							
 							var uploadTask = imageRef.put(file);
 							
+							// update the new values
 							var ref = firebase.database().ref("teams/" + oldteamid);
 							ref.update({
 								captain: captain,
@@ -207,6 +207,7 @@
 		</div>
 	</div>
 	<script>
+		// logout button
 		document.getElementById("logout").addEventListener("click",function(){
 			firebase.auth().signOut().then(function() {
 			  console.log("logout");

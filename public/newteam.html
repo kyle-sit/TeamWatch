@@ -88,29 +88,32 @@
 		
 		var email = "default";
 		
+		// get the users email
 		firebase.auth().onAuthStateChanged(function(user) {
 			email = user.email;
 		});
 		
-		
+		// add a team to the database
 		function addTeam() {
 			var teamname = document.getElementById("teamname").value;
 			var captain = document.getElementById("captain").value;
 			var level = document.getElementById("level").value;
 			var file = document.querySelector('input[type=file]').files[0];
 			
+			// input check
 			if (teamname == "" || captain == "" || level == "" || file == null	) {
 				alert("Please enter all the fields.");
 				return false;
 			}
 			
-			
+			// upload the file
 			var imageName = file.name;
 			var imageRef = storageRef.child("/teams/" + imageName);
 			console.log(imageName);
 			
 			var uploadTask = imageRef.put(file);
 			
+			// check the current team id
 			var counterRef = firebase.database().ref();
 			counterRef.once('value').then(function(snapshot) {
 				var teamid = snapshot.val().teamcounter + 1;
@@ -118,6 +121,7 @@
 				counterRef.update({
 					teamcounter: teamid
 				});
+				// update the database
 				firebase.database().ref('teams/' + teamid).set({
 					username: email,
 					teamname: teamname,

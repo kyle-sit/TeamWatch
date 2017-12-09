@@ -102,6 +102,7 @@
 		</div>
 	</div>
 	<script>
+		// logout button
 		document.getElementById("logout").addEventListener("click",function(){
 			firebase.auth().signOut().then(function() {
 			  console.log("logout");
@@ -128,10 +129,12 @@
 		
 		sessionStorage.clear();
 		
+		// depends on if a uesr is logged in or not
 		firebase.auth().onAuthStateChanged(function(user) {
 			if(user) {
 				
 				var teamsRef = firebase.database().ref("teams");
+				// iterate through the iteams that belong to the user
 				teamsRef.orderByChild("username").equalTo(user.email).on('value', function(snapshot) {
 					snapshot.forEach(function(data) {
 						// left side data
@@ -151,17 +154,19 @@
 						
 							var content = document.querySelector('#template1').content;
 							
+							// left side data
 							content.querySelector('img').src = url;
 							content.querySelector('a').innerHTML = teamname;
 							content.querySelector('p').innerHTML = "Captain: " + captain + " | Level: " + level;
 							content.querySelector('a').setAttribute('onclick', "viewTeam(\""+teamname+"\");");
 							content.querySelector('a').setAttribute('onclick', "viewTeam(\""+teamname+"\",\""+data.key+"\");");
-							content.getElementById('score').innerHTML = scoreString;
+							
 							
 							// right side data
 							var a = data.key;
 							var teamid = data.key;
 							
+							content.getElementById('score').innerHTML = scoreString;
 							content = document.querySelector('#template1').content;
 							content.querySelector('input').setAttribute('onclick', "deleteTeam(\""+a+"\");");
 							content.querySelector('button').setAttribute('onclick', "editTeam(\""+teamid+"\");");
@@ -184,6 +189,7 @@
 		var counterRef = firebase.database().ref();
 		var storageRef2 = firebase.storage().ref();
 		
+		// function to delete a team
 		function deleteTeam(key) {
 			var teamsRef = firebase.database().ref("teams");
 			var keyRef = firebase.database().ref("teams/" + key);
@@ -205,12 +211,14 @@
 			
 		}
 			
+		// edit a team
 		function editTeam(key) {
 			sessionStorage.clear();
 			sessionStorage.setItem("edit", key);
 			document.location.href = "editteam.html";
 		}
 		
+		// view a team
 		function viewTeam(name, id) {
 			sessionStorage.setItem("currentTeam", name);
 			sessionStorage.setItem("teamid", id);
