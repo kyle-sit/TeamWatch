@@ -12,7 +12,6 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <!--<link rel="stylesheet" href="font-awesome.css">-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>-->
     <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>-->
@@ -77,10 +76,7 @@
               </div>
               <div class="form-group">
                 <label for="playerImg">Upload Player Image</label>
-      
                 <input type="file" name="playerImg" accept="image/*" id="playerImg">
-
-                
               </div>
             </form>
           </div>
@@ -182,7 +178,7 @@
     
     <br>
     <script>
-      /*var config = {
+      var config = {
           apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
           authDomain: "teamsnipelk.firebaseapp.com",
           databaseURL: "https://teamsnipelk.firebaseio.com",
@@ -194,44 +190,55 @@
         var db = firebase.database();
         var storageRef = firebase.storage().ref();
 
-        var teamid = "4";
+        /*var teamid = sessionStorage.getItem("teamid");
+        var teamname = sessionStorage.getItem("currentTeam");*/
+        var teamname = "DOGS";
+        var teamid = 4;
 
       document.getElementById("save").addEventListener("click",function(){ 
         var name = document.getElementById("name").value;
         var num = document.getElementById("num").value;
         var dob = document.getElementById("dob").value;
         var position = document.getElementById("position").value;
-        var image = document.getElementById("playerImg").value;
-        var img, imgRef;
+        var file = document.querySelector('input[type=file]').files[0];
+        var img = "player.png";
 
-        if(image) {
-          var thisRef = storageRef.child(image.name);
-
-          thisRef.put(image.name).then(function(snapshot){
-            console.log("uploaded");
-          });
-          
+        if(file) {
+          console.log("file");
+          var imgName = file.name;
+          var imgRef = storageRef.child("players/"+imgName);
+          var uploadTask = imgRef.put(file);
+          img = imgName;
         }
 
         if(name == "" || num == "" || dob == "" || position == ""){
           alert("Please enter all fields");
         }
         else {
-          firebase.database().ref('teams/'+teamid+'/players/'+num).set({
-            name: name,
-            num: num,
-            dob: dob,
-            position: position,
-            GP: 0,
-            PKs: 0,
-            SoG: 0,
-            fouls: 0,
-            goals: 0
+          firebase.database().ref('teams/'+teamid+'/players').on('value',function(snapshot){
+            snapshot.forEach(function(player){
+              if(num == player.val().num){
+                alert("Player number taken!");
+              }
+              else{
+                firebase.database().ref('teams/'+teamid+'/players/'+num).set({
+                  name: name,
+                  num: num,
+                  dob: dob,
+                  position: position,
+                  GP: 0,
+                  PKs: 0,
+                  SoG: 0,
+                  fouls: 0,
+                  goals: 0,
+                  img: img
+                });
+                $('#playerModal').modal('hide');
+                window.location.reload();
+              }
+            });
           });
-          
-          $('#playerModal').modal('hide');
-          window.location.reload();
-        }
+        } 
       });
 
       window.addEventListener('DOMContentLoaded', function() {
@@ -241,25 +248,21 @@
         var h2 = t.content.querySelector('h2');
         var h6 = t.content.querySelectorAll('h6');
         var image = t.content.querySelector('img');
-        let teamname = document.querySelector('#team');
+        let team = document.querySelector('#team');
 
-        firebase.database().ref('teams/'+teamid).on('value',function(snapshot){
-          teamname.innerHTML = "Team " + snapshot.val().teamname;
-        });
-
+        team.innerHTML = "Team " + teamname;
         firebase.database().ref('teams/'+teamid+'/players/').on('value',function(snapshot){
           snapshot.forEach(function(player){
             h2.innerHTML = player.val().name + " #" + player.val().num;
             h6[0].innerHTML = "DOB: " + player.val().dob;
             h6[1].innerHTML = "Position: " + player.val().position;
             h6[2].innerHTML = "ID: " + (++key);
-        
-            if(player.img){
-              image.src = player.img;
-            }
-            else {
-              image.src = "http://primitivedesigns.co.uk/squarepegscoaching.com/wp-content/uploads/2017/03/Avatar-1.png";
-            }
+
+            firebase.storage().ref('/players/').child(player.val().img).getDownloadURL().then(function(url){
+              image.src = url;
+              alert(url);
+            });            
+            
             t.content.querySelector("#remove").setAttribute('onclick', "deletePlayer(\""+player.val().num+"\");");
             t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+player.val().num+"\");");
             var clone = document.importNode(t.content, true);
@@ -304,7 +307,6 @@
           playerRef.on('value',function(snap) {
             var data = snap.val();
             console.log(data);
-<<<<<<< HEAD
             data.name = name;
             data.num = num;
             data.dob = dob;
@@ -314,17 +316,16 @@
             if(data.num != snap.val().num){
               firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
             }
-=======
->>>>>>> 444888a0fc6a9f9c62330c232a7b64b80cdf6e7f
           });
           $('#editModal').modal('hide');
           window.location.reload();
         }
-      });*/
+      });
 
       document.getElementById("logout").addEventListener("click",function(){
         firebase.auth().signOut().then(function() {
           console.log("logout");
+          document.location.href = "login.html";
         }, function(error) {
           console.log("no logout");
         });
