@@ -80,16 +80,6 @@
             
         //firebase references for updating and reading
         let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame);
-            
-        /*if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(function() {
-                    console.log("Service Worker Registered");
-                }).catch(function() {
-                    console.log("Service Worker Not Registered");
-                });
-            });
-        }*/
         
         //loads the page initially
         window.addEventListener('DOMContentLoaded', function () {       
@@ -114,7 +104,6 @@
             
             //firebase references for updating and reading
             let playerRef = db.ref('teams/' + teamID + '/players/' + playerNumber);
-            //let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame);
             
             //games snapshot for updating score
             db.ref('teams/' + teamID + '/games/' + currentGame)
@@ -200,25 +189,16 @@
 					teamRef.once('value').then(function(snapshot) {
                         let game = gamesnapshot.val();
                         if(game.goalsFor > game.goalsAgainst) {
-                            //gameRef.update({
-                            //   outcome: 'win'
-                            //});
 							var wins = snapshot.val().wins + 1;
 							teamRef.update({
 								wins: wins
 							});
                         } else if (games.goalsFor == game.goalsAgainst) {
-                            //gameRef.update({
-                            //    outcome: 'tie'
-                            //}); 
 							var ties = snapshot.val().ties + 1;
 							teamRef.update({
 								ties: ties
 							});
                         } else {
-                            //gameRef.update({
-                            //    outcome: 'loss'
-                            //});
 							var losses = snapshot.val().losses + 1;
 							teamRef.update({
 								losses: losses
@@ -229,6 +209,7 @@
             document.location.href = 'teamschedule.html';
         });
         
+        //onclick for logout
         document.getElementById("logout").addEventListener("click",function(){
             firebase.auth().signOut().then(function() {
                 console.log("logout");

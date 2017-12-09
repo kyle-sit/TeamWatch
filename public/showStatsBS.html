@@ -122,16 +122,6 @@
             firebase.initializeApp(config);
             var db = firebase.database();
             
-            /*if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').then(function() {
-                        console.log("Service Worker Registered");
-                    }).catch(function() {
-                        console.log("Service Worker Not Registered");
-                    });
-                });
-            }*/
-            
             //session variables for use
             let username = sessionStorage.getItem("username");
             let teamID = sessionStorage.getItem("teamid");
@@ -177,6 +167,7 @@
                 
             });
             
+            //onclick listener for logout
             document.getElementById("logout").addEventListener("click",function(){
                 firebase.auth().signOut().then(function() {
                     console.log("logout");
@@ -185,6 +176,7 @@
                 });
             });
             
+            //onclick listener for save
             document.getElementById("save").addEventListener("click",function(){
                 //grab html values
                 let jerNum = document.getElementById('jerseyNum').value;
@@ -228,51 +220,6 @@
             });
             
         </script>
-        
-        <!--<script type="text/javascript">
-            //function called on submitting edit player modal
-            function submitStats() {
-                //grab html values
-                let jerNum = document.getElementById('jerseyNum').value;
-                let goals = document.getElementById('goals').value;
-                let SoG = document.getElementById('SoG').value;
-                let PKs = document.getElementById('PKs').value;
-                let GP = document.getElementById('GP').value;
-                let fouls = document.getElementById('fouls').value;
-                
-                //if checks for unchanged fields
-                if(goals == "") {
-                    goals = 0;
-                }
-                if(SoG == "") {
-                    SoG = 0;
-                }
-                if(PKs == "") {
-                    PKs = 0;
-                }
-                if(GP == "") {
-                    GP = 0;
-                }
-                if(fouls == "") {
-                    fouls = 0;
-                }
-                
-                if(jerNum == "") {
-                    alert('Need to enter the jersey number of player to edit.');
-                }
-                //update the database
-                else {
-                    let playerRef = firebase.database().ref('teams/snakes/players/' + jerNum);
-                    playerRef.update({
-                                    goals: goals,
-                                    SoG: SoG,
-                                    PKs: PKs,
-                                    GP: GP,
-                                    fouls: fouls
-                              });
-                }
-            }
-        </script>-->
         
         <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2FshowStatsBS.html">W3 Validator</a></p>
         
