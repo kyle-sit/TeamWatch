@@ -216,11 +216,14 @@
         }
         else {
           firebase.database().ref('teams/'+teamid+'/players').on('value',function(snapshot){
+            let taken = false;
             snapshot.forEach(function(player){
               if(num == player.val().num){
                 alert("Player number taken!");
+                taken = true;
               }
-              else{
+            });
+            if(!taken) {
                 firebase.database().ref('teams/'+teamid+'/players/'+num).set({
                   name: name,
                   num: num,
@@ -235,8 +238,7 @@
                 });
                 $('#playerModal').modal('hide');
                 window.location.reload();
-              }
-            });
+            }
           });
         } 
       });
@@ -272,7 +274,8 @@
       });
 
       function deletePlayer(key) {
-        firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
+        //firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
+        return firebase.database().ref('teams/'+teamid+'/players/').child(key).remove();
         window.location.reload();
       }
 
