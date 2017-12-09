@@ -73,7 +73,61 @@
 		}
 	</style>
 	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
-	<script>	
+</head>
+<body>
+	<div class="container">
+		<div class="row justify-content-end" style="text-align: right;">
+		  <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+		</div>
+		<h1 id="teamwatch">TeamSnip</h1>
+	</div>
+	<hr>
+	<div class="home">
+		<div class="item">
+			<div class="content">
+			
+				<form action="#" class="form-horizontal" id="form" name="form">
+					<div class="logo">
+						<h1 style="white-space: nowrap;">Add Team</h1>
+					</div>
+					<div>
+						<img style="height: 75px; margin-top: -30px; margin-left: 40%; margin-bottom: 20px;" src="http://www.culturecraver.com/sites/default/files/styles/event_image_400/public/cc2014files/ui-images/empty_profile_image.png?itok=uS6giwT0" alt="profile" />
+					</div>
+					<label for="teamname">Team Name</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user"></i></span>
+						<input id="teamname" type="text" class="form-control" placeholder="Team Name">
+					</div>
+					<br>
+					<label for="captain">Team Captain</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user"></i></span>
+						<input id="captain" type="text" class="form-control" placeholder="Team Captain">
+					</div>
+					<br>
+					<label for="level">Level</label>
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user"></i></span>
+						<input id="level" type="text" class="form-control" placeholder="Level">
+					</div>
+					<br>
+					<label for="picture">Team Picture</label>
+					<div class="input-group">
+						<input id="picture" type="file" name="pic" accept="image/*">
+					</div>
+					<br><br>
+					<div class="form-group in">
+						<button type="button" class="btn btn info btn-block" id="addTeam">Add Team</button>
+						<a href="teams.html">Click here to go back to teams.</a>
+					</div>
+				</form>
+				
+			</div>
+					
+		</div>
+		
+	</div>
+        <script>	
                 if('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/sw.js', { scope: '/' })
                     .then(function(registration) {
@@ -149,62 +203,7 @@
 				
 			});
 		});
-	</script>
-</head>
-<body>
-	<div class="container">
-		<div class="row justify-content-end" style="text-align: right;">
-		  <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
-		</div>
-		<h1 id="teamwatch">TeamSnip</h1>
-	</div>
-	<hr>
-	<div class="home">
-		<div class="item">
-			<div class="content">
-			
-				<form action="#" class="form-horizontal" id="form" name="form">
-					<div class="logo">
-						<h1 style="white-space: nowrap;">Add Team</h1>
-					</div>
-					<div>
-						<img style="height: 75px; margin-top: -30px; margin-left: 40%; margin-bottom: 20px;" src="http://www.culturecraver.com/sites/default/files/styles/event_image_400/public/cc2014files/ui-images/empty_profile_image.png?itok=uS6giwT0" alt="profile" />
-					</div>
-					<label for="teamname">Team Name</label>
-					<div class="input-group">
-						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input id="teamname" type="text" class="form-control" placeholder="Team Name">
-					</div>
-					<br>
-					<label for="captain">Team Captain</label>
-					<div class="input-group">
-						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input id="captain" type="text" class="form-control" placeholder="Team Captain">
-					</div>
-					<br>
-					<label for="level">Level</label>
-					<div class="input-group">
-						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input id="level" type="text" class="form-control" placeholder="Level">
-					</div>
-					<br>
-					<label for="picture">Team Picture</label>
-					<div class="input-group">
-						<input id="picture" type="file" name="pic" accept="image/*">
-					</div>
-					<br><br>
-					<div class="form-group in">
-						<button type="button" class="btn btn info btn-block" id="addTeam">Add Team</button>
-						<a href="teams.html">Click here to go back to teams.</a>
-					</div>
-				</form>
-				
-			</div>
-					
-		</div>
-		
-	</div>
-	<script>
+	
 		document.getElementById("logout").addEventListener("click",function(){
 			firebase.auth().signOut().then(function() {
 			  console.log("logout");
