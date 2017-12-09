@@ -287,12 +287,11 @@
           var imgRef = storageRef.child('/players/'+imagename);
 
           imgRef.delete().then(function() {
-            // File deleted successfully
+    
             playerRef.remove();
-            alert("Deleted sucessfully.");
             window.location.reload();
           }).catch(function(error) {
-          // Uh-oh, an error occurred!
+          
           });
           }
           else{
@@ -344,7 +343,6 @@
                   }
                 });
                 if(!taken){
-                  alert("1");
                   data.name = name;
                   data.num = num;
                   data.dob = dob;
@@ -358,7 +356,6 @@
               });
             }
             else{
-              alert("2");
               data.name = name;
               data.dob = dob;
               data.position = position;
