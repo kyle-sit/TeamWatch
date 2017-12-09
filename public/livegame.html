@@ -80,16 +80,6 @@
             
         //firebase references for updating and reading
         let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame);
-            
-        /*if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(function() {
-                    console.log("Service Worker Registered");
-                }).catch(function() {
-                    console.log("Service Worker Not Registered");
-                });
-            });
-        }*/
         
         //loads the page initially
         window.addEventListener('DOMContentLoaded', function () {       
@@ -212,6 +202,7 @@
             document.location.href = 'teamschedule.html';
         });
         
+        //onclick for logout
         document.getElementById("logout").addEventListener("click",function(){
             firebase.auth().signOut().then(function() {
                 console.log("logout");
