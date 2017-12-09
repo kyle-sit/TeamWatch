@@ -83,7 +83,7 @@
 				
 					<div class="col-sm-6 col-xs-6">
 						<div class="jumbotron">
-							<h2>10W-10L</h2>
+							<h2 id="score">10W-10L</h2>
 						</div>
 						<div class="col-sm-1 col-xs-1" style="margin-top: -67px; margin-left: 60px;">
 							<button onclick="#">Edit</button>
@@ -139,6 +139,11 @@
 						var captain = data.val().captain;
 						var level = data.val().level;
 						var imgname = data.val().imagename;
+						var wins = data.val().wins;
+						var losses = data.val().losses;
+						var ties = data.val().ties;
+						
+						var scoreString = wins + "W-" + losses + "L-" + ties + "T";
 						
 						var content = document.querySelector('#template1').content;
 						
@@ -151,7 +156,9 @@
 							content.querySelector('p').innerHTML = "Captain: " + captain + " | Level: " + level;
 							content.querySelector('a').setAttribute('onclick', "viewTeam(\""+teamname+"\");");
 							content.querySelector('a').setAttribute('onclick', "viewTeam(\""+teamname+"\",\""+data.key+"\");");
+							content.getElementById('score').innerHTML = scoreString;
 							
+							// right side data
 							var a = data.key;
 							var teamid = data.key;
 							
@@ -168,13 +175,6 @@
 						});
 						
 						
-						// right side data
-						/*var e = document.createElement('div');
-						e.class = "jumbotron";*/
-						
-						//clone = document.importNode(content, true);
-						
-						//document.getElementById('right').append(clone);
 					});
 				});
 			}

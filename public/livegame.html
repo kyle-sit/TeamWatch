@@ -190,25 +190,42 @@
 
         });
         
+		let teamRef = db.ref('teams/' + teamID);
+		
         //onclick for submitting stats
         document.getElementById("endGame").addEventListener("click",function() {
             db.ref('teams/' + teamID + '/games/' + currentGame)
-                    .once('value').then(function(gamesnapshot) { 
+                    .once('value').then(function(gamesnapshot) {
+					
+					teamRef.once('value').then(function(snapshot) {
                         let game = gamesnapshot.val();
                         if(game.goalsFor > game.goalsAgainst) {
-                            gameRef.update({
-                                outcome: 'win'
-                            });
+                            //gameRef.update({
+                            //   outcome: 'win'
+                            //});
+							var wins = snapshot.val().wins + 1;
+							teamRef.update({
+								wins: wins
+							});
                         } else if (games.goalsFor == game.goalsAgainst) {
-                            gameRef.update({
-                                outcome: 'tie'
-                            }); 
+                            //gameRef.update({
+                            //    outcome: 'tie'
+                            //}); 
+							var ties = snapshot.val().ties + 1;
+							teamRef.update({
+								ties: ties
+							});
                         } else {
-                            gameRef.update({
-                                outcome: 'loss'
-                            });
+                            //gameRef.update({
+                            //    outcome: 'loss'
+                            //});
+							var losses = snapshot.val().losses + 1;
+							teamRef.update({
+								losses: losses
+							})
                         }
-                    });
+					});
+			});
             document.location.href = 'teamschedule.html';
         });
         
