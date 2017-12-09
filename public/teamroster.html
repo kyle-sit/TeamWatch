@@ -95,7 +95,7 @@
     <template id="playerRow">
       <div class="row" id="temp">
         <div class="col-4 text-center">
-          <img src="http://primitivedesigns.co.uk/squarepegscoaching.com/wp-content/uploads/2017/03/Avatar-1.png" alt="profile image" class="img-responsive w-75" id="image">
+          <img src="" alt="profile image" class="img-responsive w-75" id="image">
         </div>
         <div class="col-7 bg-info">
           <div class="row">
@@ -190,10 +190,9 @@
         var db = firebase.database();
         var storageRef = firebase.storage().ref();
 
-        /*var teamid = sessionStorage.getItem("teamid");
-        var teamname = sessionStorage.getItem("currentTeam");*/
-        var teamname = "DOGS";
-        var teamid = 4;
+        var teamid = sessionStorage.getItem("teamid");
+        var teamname = sessionStorage.getItem("currentTeam");
+  
 
       document.getElementById("save").addEventListener("click",function(){ 
         var name = document.getElementById("name").value;
@@ -204,10 +203,11 @@
         var img = "player.png";
 
         if(file) {
-          console.log("file");
           var imgName = file.name;
-          var imgRef = storageRef.child("players/"+imgName);
-          var uploadTask = imgRef.put(file);
+          var imgRef = storageRef.child("/players/"+imgName);
+          uploadTask = imgRef.put(file).then(function(snapshot) {
+            window.location.reload();
+          });
           img = imgName;
         }
 
@@ -215,7 +215,7 @@
           alert("Please enter all fields");
         }
         else {
-          firebase.database().ref('teams/'+teamid+'/players').on('value',function(snapshot){
+          firebase.database().ref('teams/'+teamid+'/players').once('value',function(snapshot){
             let taken = false;
             snapshot.forEach(function(player){
               if(num == player.val().num){
@@ -223,6 +223,7 @@
                 taken = true;
               }
             });
+
             if(!taken) {
                 firebase.database().ref('teams/'+teamid+'/players/'+num).set({
                   name: name,
@@ -254,29 +255,52 @@
 
         team.innerHTML = "Team " + teamname;
         firebase.database().ref('teams/'+teamid+'/players/').on('value',function(snapshot){
-          snapshot.forEach(function(player){
-            h2.innerHTML = player.val().name + " #" + player.val().num;
-            h6[0].innerHTML = "DOB: " + player.val().dob;
-            h6[1].innerHTML = "Position: " + player.val().position;
-            h6[2].innerHTML = "ID: " + (++key);
+          snapshot.forEach(function(player){  
+
+            
 
             firebase.storage().ref('/players/').child(player.val().img).getDownloadURL().then(function(url){
-              image.src = url;
-              alert(url);
+              //document.querySelector('#image').src = url;
+              var content = document.querySelector('#playerRow').content;
+              content.querySelector('img').src = url;
+              h2.innerHTML = player.val().name + " #" + player.val().num;
+              h6[0].innerHTML = "DOB: " + player.val().dob;
+              h6[1].innerHTML = "Position: " + player.val().position;
+              h6[2].innerHTML = "ID: " + (++key);
+              t.content.querySelector("#remove").setAttribute('onclick', "deletePlayer(\""+player.val().num+"\");");
+              t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+player.val().num+"\");");
+              var clone = document.importNode(t.content, true);
+              playerList.appendChild(clone);
+              
             });            
             
-            t.content.querySelector("#remove").setAttribute('onclick', "deletePlayer(\""+player.val().num+"\");");
-            t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+player.val().num+"\");");
-            var clone = document.importNode(t.content, true);
-            playerList.appendChild(clone);
+            
           });
         });
       });
 
       function deletePlayer(key) {
-        //firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
-        return firebase.database().ref('teams/'+teamid+'/players/').child(key).remove();
-        window.location.reload();
+        var playerRef = firebase.database().ref('teams/'+teamid+'/players/'+key);
+        playerRef.once('value',function(player){
+          var imagename = player.val().img;
+          if(imagename != "player.png"){
+          var imgRef = storageRef.child('/players/'+imagename);
+
+          imgRef.delete().then(function() {
+    
+            playerRef.remove();
+            window.location.reload();
+          }).catch(function(error) {
+          
+          });
+          }
+          else{
+            playerRef.remove();
+            window.location.reload();
+          }
+        });
+        
+        firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
       }
 
       function editPlayer(key) {
@@ -309,19 +333,37 @@
           var players = firebase.database().ref('teams/'+teamid+'/players/'+num);
           playerRef.on('value',function(snap) {
             var data = snap.val();
-            console.log(data);
-            data.name = name;
-            data.num = num;
-            data.dob = dob;
-            data.position = position;
-
-            players.update(data);
-            if(data.num != snap.val().num){
-              firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
+            if(snap.val().num != num){
+              firebase.database().ref('teams/'+teamid+'/players').once('value',function(play){
+                let taken = false;
+                play.forEach(function(snapshot){
+                  if(snapshot.val().num == num){
+                    alert("Player number taken!");
+                    taken = true;
+                  }
+                });
+                if(!taken){
+                  data.name = name;
+                  data.num = num;
+                  data.dob = dob;
+                  data.position = position;
+                  players.update(data);
+                
+                  firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
+                  $('#editModal').modal('hide');
+                  window.location.reload();
+                } 
+              });
+            }
+            else{
+              data.name = name;
+              data.dob = dob;
+              data.position = position;
+              players.update(data);
+              $('#editModal').modal('hide');
+              window.location.reload();
             }
           });
-          $('#editModal').modal('hide');
-          window.location.reload();
         }
       });
 
@@ -337,7 +379,7 @@
 
     </script>
 
-    <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Fteamroster.html">W3 Validator</a></p>
+    
   </body>
 
 </html>

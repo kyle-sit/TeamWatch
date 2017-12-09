@@ -69,10 +69,10 @@
                   <input type="text" class="form-control" id="location">
                 </div>
                 <div class="form-group">
-                  <label for="tscore">Team Score</label>
-                  <input type="number" class="form-control" id="tscore" min=0 placeholder="-">
-                  <label for="oscore">Opponent Score</label>
-                  <input type="number" class="form-control" id="oscore" min= 0 placeHolder="-">
+                  <label for="goalsFor">Team Score</label>
+                  <input type="number" class="form-control" id="goalsFor" min=0 placeholder="-">
+                  <label for="goalsAgainst">Opponent Score</label>
+                  <input type="number" class="form-control" id="goalsAgainst" min= 0 placeHolder="-">
                 </div>
               </form>
             </div>
@@ -179,7 +179,9 @@
             };
             firebase.initializeApp(config);
 
-            var teamid = "4";
+            var teamid = sessionStorage.getItem("teamid");
+            var teamname = sessionStorage.getItem("currentTeam");
+    
 
             document.getElementById("save").addEventListener("click",function(){
               var oppName = document.getElementById("oppName").value;
@@ -187,24 +189,36 @@
               var date = document.getElementById("date").value;
               var time = document.getElementById("time").value;
               var location = document.getElementById("location").value;
-              var tscore = document.getElementById("tscore").value;
-              var oscore = document.getElementById("oscore").value;
+              var goalsFor = document.getElementById("goalsFor").value;
+              var goalsAgainst = document.getElementById("goalsAgainst").value;
 
               if(oppName == "" || home == "" || date == "" || time == "" || location == "") {
                   alert("Please enter all fields");
               }
               else{
-                firebase.database().ref('teams/'+teamid+'/games/'+date+time).set({
-                  oppName: oppName,
-                  home: home,
-                  date: date,
-                  time: time,
-                  location: location,
-                  tscore: tscore,
-                  oscore: oscore
+                firebase.database().ref('teams/'+teamid+'/games').once('value',function(snapshot){
+                  let taken = false;
+                  snapshot.forEach(function(game){
+                    if((date == game.val().date) && (time == game.val().time)){
+                      alert("Game conflict!");
+                      taken = true;
+                    }
+                  });
+                    if(!taken){
+                      firebase.database().ref('teams/'+teamid+'/games/'+date+time).set({
+                        oppName: oppName,
+                        home: home,
+                        date: date,
+                        time: time,
+                        location: location,
+                        goalsFor: goalsFor,
+                        goalsAgainst: goalsAgainst,
+                        outcome: ""
+                      });
+                      $('#gameModal').modal('hide');
+                      window.location.reload();
+                    }
                 });
-                $('#gameModal').modal('hide');
-                window.location.reload();
               }
             });
 
@@ -214,18 +228,17 @@
               var h5 = t.content.querySelector('h5');
               var p = t.content.querySelector('p');
               var span = t.content.querySelector('span');
-              var teamname = document.querySelector('#team');
+              var team = document.querySelector('#team');
 
-              firebase.database().ref('teams/'+teamid).on('value',function(snapshot){
-                teamname.innerHTML = "Team " + snapshot.val().teamname;
-              });
+              team.innerHTML = "Team " + teamname;
+              
 
               firebase.database().ref('teams/'+teamid+'/games/').on('value',function(games){
                 games.forEach(function(game){
                   h5.innerHTML = game.val().home + " vs " + game.val().oppName;
                   p.innerHTML = game.val().date + " " + game.val().time + " at " + game.val().location;
-                  span.innerHTML =  game.val().tscore + " - " + game.val().oscore;
-               
+                  span.innerHTML =  game.val().goalsFor + " - " + game.val().goalsAgainst;
+                  
                   t.content.querySelector("#remove").setAttribute('onclick', "deleteGame(\""+game.val().date+game.val().time+"\");");
                   t.content.querySelector("#livegame").setAttribute('onclick',"livegame(\""+game.val().date+game.val().time+"\");");
                   t.content.querySelector("#edit").setAttribute('onclick', "editGame(\""+game.val().date+game.val().time+"\");");
@@ -247,8 +260,8 @@
                 var oldDate = game.val().date;
                 var oldTime = game.val().time;
                 var oldLoc = game.val().location;
-                var oldT = game.val().tscore;
-                var oldS = game.val().oscore;
+                var oldT = game.val().goalsFor;
+                var oldS = game.val().goalsAgainst;
 
                 document.getElementById("oldTeam").value = oldTeam;
                 document.getElementById("oldHome").value = oldHome;
@@ -267,39 +280,59 @@
               var date = document.getElementById("oldDate").value;
               var time = document.getElementById("oldTime").value;
               var location = document.getElementById("oldLoc").value;
-              var tscore = document.getElementById("oldT").value;
-              var oscore = document.getElementById("oldS").value;
+              var goalsFor = document.getElementById("oldT").value;
+              var goalsAgainst = document.getElementById("oldS").value;
               var key = document.getElementById("key").value;
               console.log(key);
 
-              if(oppName == "" || home == "" || date == "" || time == "" || location == "" || tscore == "" || oscore == "" ) {
+              if(oppName == "" || home == "" || date == "" || time == "" || location == "" ) {
                   alert("Please enter all fields");
               }
               else{
                 var gameRef = firebase.database().ref('teams/'+teamid+'/games/'+key);
                 var games = firebase.database().ref('teams/'+teamid+'/games/'+date+time);
+
                 /*console.log(games.team);*/
                 gameRef.on('value',function(snap){
                   var data = snap.val();
-                  /*console.log(data.team);*/
-                  data.oppName = team;
-                  data.home = home;
-                  data.date = date;
-                  data.time = time;
-                  data.location = location;
-                  data.tscore = tscore;
-                  data.oscore = oscore;
-                  games.update(data);
-                  
-                  if((snap.val().time != data.time) || (snap.val().date != data.date)){
-                    firebase.database().ref('teams/'+teamid+'/games/'+key).remove();
+                  if((snap.val().time != time) || (snap.val().date != date)){
+                    firebase.database().ref('teams/'+teamid+'/games').once('value',function(game){
+                      let taken = false;
+                      game.forEach(function(snapshot){
+                        if((snapshot.val().date == date) && (snapshot.val().time == time)){
+                          alert("Game conflict!");
+                          taken = true;
+                        }
+                      });
+                      if(!taken){
+                        data.oppName = team;
+                        data.home = home;
+                        data.date = date;
+                        data.time = time;
+                        data.location = location;
+                        data.goalsFor = goalsFor;
+                        data.goalsAgainst = goalsAgainst;
+                        games.update(data);
+                
+                        firebase.database().ref('teams/'+teamid+'/games/'+key).remove();
+  
+                        $('#editModal').modal('hide');
+                        window.location.reload();
+                      } 
+                    });
                   }
-                });
-          
-                $('#editModal').modal('hide');
-                window.location.reload();
+                  else{
+                    data.oppName = team;
+                    data.home = home;
+                    data.location = location;
+                    data.goalsFor = goalsFor;
+                    data.goalsAgainst = goalsAgainst;
+                    games.update(data);
+                    $('#editModal').modal('hide');
+                    window.location.reload();
+                  }
+                }); 
               }
-              
             });
 
             function livegame(key) {
@@ -310,14 +343,12 @@
           document.getElementById("logout").addEventListener("click",function(){
             firebase.auth().signOut().then(function() {
               console.log("logout");
+              document.location.href = "login.html";
             }, function(error) {
               console.log("no logout");
             });
           });
           </script>
-
-
-    <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Fteamschedule.html">W3 Validator</a></p>
 
 
   </body>
