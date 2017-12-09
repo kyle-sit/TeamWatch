@@ -71,9 +71,13 @@
 			align-items: center;
 		}
 	</style>
+	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 </head>
 <body>
 	<div class="container">
+		<div class="row justify-content-end" style="text-align: right;">
+		  <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+		</div>
 		<h1 id="teamwatch">TeamSnip</h1>
 	</div>
 	<hr>
@@ -108,52 +112,92 @@
 					<br>
 					<label for="picture">Team Picture</label>
 					<div class="input-group">
-						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input id="picture" type="text" class="form-control" placeholder="Picture URL">
+						<input id="picture" type="file" name="pic" accept="image/*">
 					</div>
 					<br><br>
 					<div class="form-group in">
-						<input type="submit" class="btn btn info btn-block" value="Edit Team" onclick="editTeam()">
+						<button type="button" class="btn btn info btn-block" onclick="editTeam()">Edit Team</button>
+						<a href="teams.html">Click here to go back to teams.</a>
 					</div>
 				</form>
 				<script>
-				
-					var oldteamname = sessionStorage.getItem("edit");
-					var oldvalues = JSON.parse(localStorage.getItem(oldteamname));
-					var oldcaptain = oldvalues[0];
-					var oldlevel = oldvalues[1];
-					var oldpicture = oldvalues[2];
-				
-					document.getElementById('teamname').value = oldteamname;
-					document.getElementById('captain').value = oldcaptain;
-					document.getElementById('level').value = oldlevel;
-					document.getElementById('picture').value = oldpicture;
+					
+					var config = {
+						apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+						authDomain: "teamsnipelk.firebaseapp.com",
+						databaseURL: "https://teamsnipelk.firebaseio.com",
+						projectId: "teamsnipelk",
+						storageBucket: "teamsnipelk.appspot.com",
+						messagingSenderId: "941340425394"
+					};
+					firebase.initializeApp(config);
+					
+					var email = "";
+					var storage = firebase.storage();
+					var storageRef = storage.ref('/teams/');
+					var oldteamid = sessionStorage.getItem("edit");
+					var imagename = "";
+					
+					firebase.auth().onAuthStateChanged(function(user) {
+						email = user.email;
+					});
+
+					
+					var teamRef = firebase.database().ref("teams/" + oldteamid);
+					teamRef.once('value').then(function(snapshot) {
+						console.log(snapshot.val());
+						var oldteamname = snapshot.val().teamname;
+						var oldcaptain = snapshot.val().captain;
+						var oldlevel = snapshot.val().level;
+						imagename = snapshot.val().imagename;
+							
+						document.getElementById('teamname').value = oldteamname;
+						document.getElementById('captain').value = oldcaptain;
+						document.getElementById('level').value = oldlevel;
+					});
+							
+					
+					var storageRef2 = firebase.storage().ref();
 				
 					function editTeam() {
-						var teams = JSON.parse(localStorage.getItem("teams"));
+						
 						var teamname = document.getElementById("teamname").value;
 						var captain = document.getElementById("captain").value;
 						var level = document.getElementById("level").value;
-						var picture = document.getElementById("picture").value;
-						if (teamname == "" || captain == "" || level == "" || picture == "") {
+						var file = document.querySelector('input[type=file]').files[0];
+						
+						if (teamname == "" || captain == "" || level == "" || file == null ) {
 							alert("Please enter all the fields.");
 						}
 						else {
-							// remove old team and add the new
-							localStorage.removeItem(oldteamname);
-							var index = teams.indexOf(oldteamname);
-							if (index > -1) {
-								teams.splice(index, 1);
-							}
+							/*var keyRef = firebase.database().ref("teams/" + oldteamid);
+							keyRef.once('value').then(function(snapshot) {
+								var imagename = snapshot.val().imagename;*/
+								var imageRef = storageRef2.child('teams/' + imagename);		
+								imageRef.delete().then(function() {
+								  // File deleted successfully
+								}).catch(function(error) {
+								  // Uh-oh, an error occurred!
+								});
+							//});
 							
-							teams = teams.concat([teamname]);
-							localStorage.setItem("teams", JSON.stringify(teams));
+							var imageName = file.name;
+							var imageRef = storageRef2.child("/teams/" + imageName);
+							console.log(imageName);
 							
-							var values = [captain, level, picture];
+							var uploadTask = imageRef.put(file);
 							
-							localStorage.setItem(teamname, JSON.stringify(values));
+							var ref = firebase.database().ref("teams/" + oldteamid);
+							ref.update({
+								captain: captain,
+								level: level,
+								teamname: teamname,
+								imagename: imageName
+							});
+							
+							
 							sessionStorage.clear();
-							document.getElementById("form").action = "teams.html";
+							alert("Done editing.");
 
 						}
 					}
@@ -162,8 +206,16 @@
 			</div>
 		</div>
 	</div>
-
-	<p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Feditteam.html">W3 Validator</a></p>
+	<script>
+		document.getElementById("logout").addEventListener("click",function(){
+			firebase.auth().signOut().then(function() {
+			  console.log("logout");
+			  document.location.href = "login.html";
+			}, function(error) {
+			  console.log("no logout");
+			});
+		});
+	</script>
 </body>
 
 </html>

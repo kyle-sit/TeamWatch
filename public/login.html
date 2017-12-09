@@ -80,7 +80,8 @@
 		firebase.auth().onAuthStateChanged(function(user) {
 			if(user) {
 				alert(user.email + " logged in!");
-				window.location = 'teams.html';
+				document.location.href = 'teams.html';
+				//window.location = "teams.html";
 			}
 		});
 		
@@ -88,21 +89,19 @@
 			var email = document.getElementById("username").value;
 			var password = document.getElementById("password").value;
 			
-			firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+			/*firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 				.then(function() {
-					return firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+					return*/ firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
 					  // Handle Errors here.
 					  var errorCode = error.code;
 					  var errorMessage = error.message;
 					  alert(errorMessage);
 					});
-				})
+				/*})
 				.catch(function(error) {
 					var errorCode = error.code;
 					var errorMessage = error.message;
-				});
-		
-			
+				});*/		
 		
 		}
 	</script>
@@ -131,15 +130,13 @@
 					</div>
 					<br><br>
 					<div class="form-group in">
-						<input type="submit" class="btn btn info btn-block" onclick="check(this.form);" value="Log in">
+						<button class="btn btn info btn-block" onclick="check(this.form);">Log In</button>
 						<a href="signup.html">New user? Create a new account!</a>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
-	<p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Flogin.html">W3 Validator</a></p>
-
 </body>
 
 </html>
