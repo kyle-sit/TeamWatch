@@ -223,7 +223,8 @@
                 taken = true;
               }
             });
-              if(!taken){
+
+            if(!taken) {
                 firebase.database().ref('teams/'+teamid+'/players/'+num).set({
                   name: name,
                   num: num,
@@ -237,9 +238,8 @@
                   img: img
                 });
                 $('#playerModal').modal('hide');
-                //window.location.reload();
-              }  
-            
+                window.location.reload();
+            }
           });
         } 
       });
@@ -301,6 +301,7 @@
           }
         });
         
+        firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
       }
 
       function editPlayer(key) {

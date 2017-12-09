@@ -43,6 +43,9 @@
         <div class="row">
           <button id="submitStat" type="button" value="Submit" class="btn-info mb-4 mx-auto">Add Event</button> 
         </div>
+        <div class="row">
+          <button id="endGame" type="button" value="endGame" class="btn-info mb-4 mx-auto">Game Over</button> 
+        </div>
       </div>
     </form>
     <h3 class="text-center">Event Feed</h3>
@@ -56,6 +59,12 @@
     <script type="module">
         //import {db} from './firebaseModule.js';    
             
+        //pulling session variables for use    
+        let currentGame = sessionStorage.getItem("currentGame");
+        let username = sessionStorage.getItem("username");
+        let teamID = sessionStorage.getItem("teamid");
+        let teamName = sessionStorage.getItem("currentTeam");
+            
         const config = {
             apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
             authDomain: "teamsnipelk.firebaseapp.com",
@@ -66,6 +75,11 @@
         };
         firebase.initializeApp(config);
         var db = firebase.database();
+        
+        
+            
+        //firebase references for updating and reading
+        let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame);
             
         /*if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -76,12 +90,6 @@
                 });
             });
         }*/
-
-        //pulling session variables for use    
-        let currentGame = sessionStorage.getItem("currentGame");
-        let username = sessionStorage.getItem("username");
-        let teamID = sessionStorage.getItem("teamid");
-        let teamName = sessionStorage.getItem("currentTeam");
         
         //loads the page initially
         window.addEventListener('DOMContentLoaded', function () {       
@@ -105,15 +113,15 @@
             var p = t.content.querySelector('p');
             
             //firebase references for updating and reading
-            let playerRef = db.ref('teams/' teamID + '/players/' + playerNumber);
-            let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame)
+            let playerRef = db.ref('teams/' + teamID + '/players/' + playerNumber);
+            //let gameRef = db.ref('teams/' + teamID + '/games/' + currentGame);
             
             //games snapshot for updating score
             db.ref('teams/' + teamID + '/games/' + currentGame)
                     .once('value').then(function(gamesnapshot) { 
                         var game = gamesnapshot.val();
                         //function on datasnapshot that updates database according to stat chosen
-                        db.ref('teams/' teamID + '/players/' + playerNumber)
+                        db.ref('teams/' + teamID + '/players/' + playerNumber)
                                 .once('value').then(function(snapshot) { 
                                     var player = snapshot.val();
                                     if (stat == "Goal") {
@@ -182,13 +190,53 @@
 
         });
         
-            document.getElementById("logout").addEventListener("click",function(){
-                firebase.auth().signOut().then(function() {
-                    console.log("logout");
-                }, function(error) {
-                    console.log("no logout");
-                });
+		let teamRef = db.ref('teams/' + teamID);
+		
+        //onclick for submitting stats
+        document.getElementById("endGame").addEventListener("click",function() {
+            db.ref('teams/' + teamID + '/games/' + currentGame)
+                    .once('value').then(function(gamesnapshot) {
+					
+					teamRef.once('value').then(function(snapshot) {
+                        let game = gamesnapshot.val();
+                        if(game.goalsFor > game.goalsAgainst) {
+                            //gameRef.update({
+                            //   outcome: 'win'
+                            //});
+							var wins = snapshot.val().wins + 1;
+							teamRef.update({
+								wins: wins
+							});
+                        } else if (games.goalsFor == game.goalsAgainst) {
+                            //gameRef.update({
+                            //    outcome: 'tie'
+                            //}); 
+							var ties = snapshot.val().ties + 1;
+							teamRef.update({
+								ties: ties
+							});
+                        } else {
+                            //gameRef.update({
+                            //    outcome: 'loss'
+                            //});
+							var losses = snapshot.val().losses + 1;
+							teamRef.update({
+								losses: losses
+							})
+                        }
+					});
+			});
+            document.location.href = 'teamschedule.html';
+        });
+        
+        document.getElementById("logout").addEventListener("click",function(){
+            firebase.auth().signOut().then(function() {
+                console.log("logout");
+                document.location.href = 'login.html';
+            }, function(error) {
+                console.log("no logout");
             });
+        });
     </script>
     
     <p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Flivegame.html">W3 Validator</a></p>

@@ -28,12 +28,12 @@
 			text-align: center;
 		}
 		img {
-			margin: -15px -45px -20px -15px;
+			margin: -7px -45px -20px -15px;
 			width: 60px !important;
 			height: 30px;
 		}
 		.jumbotron {
-			height: 90px;
+			height: 110px;
 			position: relative;
 			text-align: center;
 		}
@@ -50,117 +50,171 @@
 			font-size: 30px;
 		}
 		input {
-			margin: -20px 0px 0px 0px;
-			width: 70px !important;
+			margin: -70px 0px 0px 0px !important;
+			width: 60px !important;
 		}
 	</style>
-	<script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-	<script src="classes.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+
 <body>
+
 	<div class="container">
-		<h1 id="teamwatch">TeamWatch</h1>
+		<div class="row justify-content-end" style="text-align: right;">
+		  <button type="button" class="btn btn-info mt-2 mr-4" id="logout">Logout</button>
+		</div>
+		<h1 id="teamwatch">TeamWatch</h1>	
 	</div>
+
 	<hr>
 	<div class="row">
-		<div class="col-sm-6 col-xs-6" id="left">
-			<h3>Team Name</h3>
+		<div class="col-sm-12 col-xs-12" id="left">
+			<h3>Team Name / Record</h3>
 			
 			<template id="template1">
-				<div class="jumbotron" style="background-color: #ADD8E6 !important">
-					<img src="https://seeklogo.com/images/B/Bassano_Virtus_55_Soccer_Team-logo-891B4EED05-seeklogo.com.png" alt="logo" class="col-sm-3 col-xs-3">
-				<h2 style='margin-top: -20px; font-size: 20px;'><a href="teamroster.html" onclick="#">Team1</a></h2>
-				<p style='font-size: 13px;'></p>
-				</div>
-			</template>
-			
-			<script>
-				var teams = JSON.parse(localStorage.getItem("teams"));
-				
-				for (key of teams) {
-					
-					var item = localStorage.getItem(key);	
-					var array = JSON.parse(item);
-					
-					var teamname = key;
-					var captain = array[0];
-					var level = array[1];
-					var picture = array[2];
-					
-					var content = document.querySelector('#template1').content;
-					content.querySelector('img').src = picture;
-					content.querySelector('a').innerHTML = teamname;
-					content.querySelector('p').innerHTML = "Captain: " + captain + " | Level: " + level;
-					content.querySelector('a').setAttribute('onclick', "viewTeam(\""+key+"\");");
-					var clone = document.importNode(content, true);
-					
-					document.getElementById('left').append(clone);
-					
-				}
-				
-				function viewTeam(key) {
-					sessionStorage.setItem("currentTeam", key);
-				}
-			</script>
-
-		</div>
-		<div class="col-sm-6 col-xs-6" id="right">
-			<h3>Record</h3>
-			
-			<template id="template2">
-				<div class="jumbotron" id="right">
 					<div class="col-sm-6 col-xs-6">
-						<h2>10W-10L</h2>
+						<div class="jumbotron" style="background-color: #ADD8E6 !important">
+						<img src="https://seeklogo.com/images/B/Bassano_Virtus_55_Soccer_Team-logo-891B4EED05-seeklogo.com.png" alt="logo" class="col-sm-3 col-xs-3">
+						<h2 style='margin-top: -20px; font-size: 20px;'><a href="teamroster.html" onclick="#">Team1</a></h2>
+						<br>
+						<p style='font-size: 13px;'></p>
+						</div>
 					</div>
-					<div class="col-sm-1 col-xs-1" style="margin-top: -10px; margin-left:-20px;">
-						<button onclick="#">Edit</button>
+
+				
+					<div class="col-sm-6 col-xs-6">
+						<div class="jumbotron">
+							<h2 id="score">10W-10L</h2>
+						</div>
+						<div class="col-sm-1 col-xs-1" style="margin-top: -67px; margin-left: 60px;">
+							<button onclick="#">Edit</button>
+						</div>
+						<div class="col-sm-1 col-xs-1" style="margin-right: 0px;">
+							<input alt="trash" type="image" src="https://openclipart.org/download/228877/Layer-1.svg" onclick="#" class="col-sm-1 col-xs-1"/>
+						</div>
 					</div>
-					<div class="col-sm-1 col-xs-1" style="margin-right: 30px;">
-						<input alt="trash" type="image" src="https://openclipart.org/download/228877/Layer-1.svg" onclick="#" class="col-sm-1 col-xs-1"/>
-					</div>
-					
 				</div>
 			</template>
-			
-			<script>
-				var teams = JSON.parse(localStorage.getItem("teams"));
-				
-				for (key of teams) {
-					var e = document.createElement('div');
-					e.class = "jumbotron";
-					a = String(key);
-					
-					var content = document.querySelector('#template2').content;
-					content.querySelector('input').setAttribute('onclick', "deleteTeam(\""+a+"\");");
-					content.querySelector('button').setAttribute('onclick', "editTeam(\""+a+"\");");
-					var clone = document.importNode(content, true);
-					
-					document.getElementById('right').append(clone);
-					
-				}
-				
-				function deleteTeam(key) {
-					localStorage.removeItem(key);
-					var index = teams.indexOf(key);
-					if (index > -1) {
-						teams.splice(index, 1);
-					}
-					localStorage.setItem("teams", JSON.stringify(teams));
-					window.location.reload();
-				}
-				
-				function editTeam(key) {
-					sessionStorage.clear();
-					sessionStorage.setItem("edit", key);
-					document.location.href = "editteam.html";
-				}
-				
-			</script>
 
 		</div>
-		<div class="col-sm-6 col-xs-6" style="align-items: center; justify-content: center; margin-bottom: 20px;">
+
+		<div class="col-sm-12 col-xs-12" style="align-items: center; justify-content: center; margin-bottom: 20px;">
 			<button type="button" class="btn btn-primary" id="addteam" onclick="location.href='newteam.html'">+ Team</button>
 		</div>
 	</div>
-	<p><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fteamsnipelk.firebaseapp.com%2Fteams.html">W3 Validator</a></p>
+	<script>
+		document.getElementById("logout").addEventListener("click",function(){
+			firebase.auth().signOut().then(function() {
+			  console.log("logout");
+			  document.location.href = "login.html";
+			}, function(error) {
+			  console.log("no logout");
+			});
+		});
+	
+		var config = {
+		apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+		authDomain: "teamsnipelk.firebaseapp.com",
+		databaseURL: "https://teamsnipelk.firebaseio.com",
+		projectId: "teamsnipelk",
+		storageBucket: "teamsnipelk.appspot.com",
+		messagingSenderId: "941340425394"
+		};
+		firebase.initializeApp(config);
+		
+		var storage = firebase.storage();
+		var storageRef = storage.ref('/teams/');
+		var imgarray = [];
+		var user = firebase.auth().currentUser;
+		
+		sessionStorage.clear();
+		
+		firebase.auth().onAuthStateChanged(function(user) {
+			if(user) {
+				
+				var teamsRef = firebase.database().ref("teams");
+				teamsRef.orderByChild("username").equalTo(user.email).on('value', function(snapshot) {
+					snapshot.forEach(function(data) {
+						// left side data
+						var teamname = data.val().teamname;
+						var captain = data.val().captain;
+						var level = data.val().level;
+						var imgname = data.val().imagename;
+						var wins = data.val().wins;
+						var losses = data.val().losses;
+						var ties = data.val().ties;
+						
+						var scoreString = wins + "W-" + losses + "L-" + ties + "T";
+						
+						var content = document.querySelector('#template1').content;
+						
+						storageRef.child(imgname).getDownloadURL().then(function(url) {
+						
+							var content = document.querySelector('#template1').content;
+							
+							content.querySelector('img').src = url;
+							content.querySelector('a').innerHTML = teamname;
+							content.querySelector('p').innerHTML = "Captain: " + captain + " | Level: " + level;
+							content.querySelector('a').setAttribute('onclick', "viewTeam(\""+teamname+"\");");
+							content.querySelector('a').setAttribute('onclick', "viewTeam(\""+teamname+"\",\""+data.key+"\");");
+							content.getElementById('score').innerHTML = scoreString;
+							
+							// right side data
+							var a = data.key;
+							var teamid = data.key;
+							
+							content = document.querySelector('#template1').content;
+							content.querySelector('input').setAttribute('onclick', "deleteTeam(\""+a+"\");");
+							content.querySelector('button').setAttribute('onclick', "editTeam(\""+teamid+"\");");
+							
+							var clone = document.importNode(content, true);
+							
+							document.getElementById('left').append(clone);
+						
+						}).catch(function(error) {
+							console.log(error);
+						});
+						
+						
+					});
+				});
+			}
+			
+		});
+		
+		var counterRef = firebase.database().ref();
+		var storageRef2 = firebase.storage().ref();
+		
+		function deleteTeam(key) {
+			var teamsRef = firebase.database().ref("teams");
+			var keyRef = firebase.database().ref("teams/" + key);
+			keyRef.once('value').then(function(snapshot) {
+				var imagename = snapshot.val().imagename;
+				var imageRef = storageRef2.child('teams/' + imagename);
+				
+				imageRef.delete().then(function() {
+				  // File deleted successfully
+					teamsRef.child(key).remove();
+					alert("Deleted sucessfully.");
+					
+					window.location.reload();
+				}).catch(function(error) {
+				  // Uh-oh, an error occurred!
+				});
+			});
+			
+			
+		}
+			
+		function editTeam(key) {
+			sessionStorage.clear();
+			sessionStorage.setItem("edit", key);
+			document.location.href = "editteam.html";
+		}
+		
+		function viewTeam(name, id) {
+			sessionStorage.setItem("currentTeam", name);
+			sessionStorage.setItem("teamid", id);
+		}
+	</script>
 </body>
 </html>
