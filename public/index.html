@@ -8,12 +8,12 @@
   </head>
   <body>
       <h1>Project 4 using BootStraps and JavaScript</h1>
-          <p><a href="login.html">Login Page</a></p>
-          <p><a href="showStatsBS.html">stats</a></p>
+          <p><a href="/dist/login.html">Regular</a></p>
+          <p><a href="login.html">Minimized</a></p>
           
       <script>
         if('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            navigator.serviceWorker.register('../sw.js', { scope: '/' })
             .then(function(registration) {
                 console.log('Service Worker Registered');
             });
