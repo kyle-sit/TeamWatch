@@ -122,16 +122,15 @@
 					</div>
 				</form>
 				<script>
-					if('serviceWorker' in navigator) {
+                                        if('serviceWorker' in navigator) {
                                             navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                                                .then(function(registration) {
+                                            .then(function(registration) {
                                                 console.log('Service Worker Registered');
                                             });
                                             navigator.serviceWorker.ready.then(function(registration) {
                                                 console.log('Service Worker Ready');
                                             });
                                         }
-                                        
 					var config = {
 						apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
 						authDomain: "teamsnipelk.firebaseapp.com",

@@ -171,16 +171,15 @@
     </div>
     <br>
     <script>
-       if('serviceWorker' in navigator) {
+        if('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                .then(function(registration) {
+            .then(function(registration) {
                 console.log('Service Worker Registered');
             });
             navigator.serviceWorker.ready.then(function(registration) {
                 console.log('Service Worker Ready');
             });
-        }  
-       
+        }
       var config = {
         apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
         authDomain: "teamsnipelk.firebaseapp.com",
@@ -217,7 +216,7 @@
           alert("Please enter all fields");
         }
         else {
-          db.ref('teams/'+teamid+'/players').once('value',function(snapshot){
+          firebase.database().ref('teams/'+teamid+'/players').once('value',function(snapshot){
             let taken = false;
             snapshot.forEach(function(player){
               /* player num already taken */
@@ -228,7 +227,7 @@
             });
             /* add player to database */
             if(!taken) {
-              db.ref('teams/'+teamid+'/players/'+num).set({
+              firebase.database().ref('teams/'+teamid+'/players/'+num).set({
                 name: name,
                 num: num,
                 dob: dob,
@@ -257,9 +256,9 @@
         let team = document.querySelector('#team');
 
         team.innerHTML = "Team " + teamname;
-        db.ref('teams/'+teamid+'/players/').on('value',function(snapshot){
+        firebase.database().ref('teams/'+teamid+'/players/').on('value',function(snapshot){
           snapshot.forEach(function(player){  
-            db.ref('/players/').child(player.val().img).getDownloadURL().then(function(url){
+            firebase.storage().ref('/players/').child(player.val().img).getDownloadURL().then(function(url){
               var content = document.querySelector('#playerRow').content;
               /* add html content */
               content.querySelector('img').src = url;
@@ -277,7 +276,7 @@
       });
 
       function deletePlayer(key) {
-        var playerRef = db.ref('teams/'+teamid+'/players/'+key);
+        var playerRef = firebase.database().ref('teams/'+teamid+'/players/'+key);
         playerRef.once('value',function(player){
           var imagename = player.val().img;
           /* if uploaded own player image */
@@ -295,11 +294,11 @@
             window.location.reload();
           }
         });
-        db.ref('teams/'+teamid+'/players/'+key).remove();
+        firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
       }
 
       function editPlayer(key) {
-        db.ref('teams/'+teamid+'/players/'+key).on('value',function(player){
+        firebase.database().ref('teams/'+teamid+'/players/'+key).on('value',function(player){
           var oldName = player.val().name;
           var oldNum = player.val().num;
           var oldDob = player.val().dob;
@@ -367,7 +366,7 @@
 
       //onclick listener to logout
       document.getElementById("logout").addEventListener("click",function(){
-        auth.signOut().then(function() {
+        firebase.auth().signOut().then(function() {
           console.log("logout");
           document.location.href = "login.html";
         }, function(error) {
