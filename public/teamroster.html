@@ -2,23 +2,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>Team Roster Page</title>
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>-->
-    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>-->
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
     <script src="modal.js"></script>
-    
-
   </head>
   <body>
     <div class="row justify-content-end">
@@ -174,25 +167,22 @@
         </div>
       </div>
     </div>
-
-    
     <br>
     <script>
       var config = {
-          apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
-          authDomain: "teamsnipelk.firebaseapp.com",
-          databaseURL: "https://teamsnipelk.firebaseio.com",
-          projectId: "teamsnipelk",
-          storageBucket: "teamsnipelk.appspot.com",
-          messagingSenderId: "941340425394"
-        };
-        firebase.initializeApp(config);
-        var db = firebase.database();
-        var storageRef = firebase.storage().ref();
+        apiKey: "AIzaSyCi4IbpqA-GvuIs9TJepvosTMbUGQ7Po_E",
+        authDomain: "teamsnipelk.firebaseapp.com",
+        databaseURL: "https://teamsnipelk.firebaseio.com",
+        projectId: "teamsnipelk",
+        storageBucket: "teamsnipelk.appspot.com",
+        messagingSenderId: "941340425394"
+      };
+      firebase.initializeApp(config);
+      var db = firebase.database();
+      var storageRef = firebase.storage().ref();
 
-        var teamid = sessionStorage.getItem("teamid");
-        var teamname = sessionStorage.getItem("currentTeam");
-  
+      var teamid = sessionStorage.getItem("teamid");
+      var teamname = sessionStorage.getItem("currentTeam");
 
       document.getElementById("save").addEventListener("click",function(){ 
         var name = document.getElementById("name").value;
@@ -218,27 +208,28 @@
           firebase.database().ref('teams/'+teamid+'/players').once('value',function(snapshot){
             let taken = false;
             snapshot.forEach(function(player){
+              /* player num already taken */
               if(num == player.val().num){
                 alert("Player number taken!");
                 taken = true;
               }
             });
-
+            /* add player to database */
             if(!taken) {
-                firebase.database().ref('teams/'+teamid+'/players/'+num).set({
-                  name: name,
-                  num: num,
-                  dob: dob,
-                  position: position,
-                  GP: 0,
-                  PKs: 0,
-                  SoG: 0,
-                  fouls: 0,
-                  goals: 0,
-                  img: img
-                });
-                $('#playerModal').modal('hide');
-                window.location.reload();
+              firebase.database().ref('teams/'+teamid+'/players/'+num).set({
+                name: name,
+                num: num,
+                dob: dob,
+                position: position,
+                GP: 0,
+                PKs: 0,
+                SoG: 0,
+                fouls: 0,
+                goals: 0,
+                img: img
+              });
+              $('#playerModal').modal('hide');
+              window.location.reload();
             }
           });
         } 
@@ -256,12 +247,9 @@
         team.innerHTML = "Team " + teamname;
         firebase.database().ref('teams/'+teamid+'/players/').on('value',function(snapshot){
           snapshot.forEach(function(player){  
-
-            
-
             firebase.storage().ref('/players/').child(player.val().img).getDownloadURL().then(function(url){
-              //document.querySelector('#image').src = url;
               var content = document.querySelector('#playerRow').content;
+              /* add html content */
               content.querySelector('img').src = url;
               h2.innerHTML = player.val().name + " #" + player.val().num;
               h6[0].innerHTML = "DOB: " + player.val().dob;
@@ -271,10 +259,7 @@
               t.content.querySelector("#edit").setAttribute('onclick', "editPlayer(\""+player.val().num+"\");");
               var clone = document.importNode(t.content, true);
               playerList.appendChild(clone);
-              
-            });            
-            
-            
+            });             
           });
         });
       });
@@ -283,23 +268,21 @@
         var playerRef = firebase.database().ref('teams/'+teamid+'/players/'+key);
         playerRef.once('value',function(player){
           var imagename = player.val().img;
+          /* if uploaded own player image */
           if(imagename != "player.png"){
-          var imgRef = storageRef.child('/players/'+imagename);
-
-          imgRef.delete().then(function() {
-    
-            playerRef.remove();
-            window.location.reload();
-          }).catch(function(error) {
-          
-          });
+            var imgRef = storageRef.child('/players/'+imagename);
+            imgRef.delete().then(function() {
+              playerRef.remove();
+              window.location.reload();
+            }).catch(function(error) {
+            });
           }
+          /* default image */
           else{
             playerRef.remove();
             window.location.reload();
           }
         });
-        
         firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
       }
 
@@ -333,28 +316,31 @@
           var players = firebase.database().ref('teams/'+teamid+'/players/'+num);
           playerRef.on('value',function(snap) {
             var data = snap.val();
+            /* If player num is different */
             if(snap.val().num != num){
               firebase.database().ref('teams/'+teamid+'/players').once('value',function(play){
                 let taken = false;
                 play.forEach(function(snapshot){
+                  /* if player num already taken */
                   if(snapshot.val().num == num){
                     alert("Player number taken!");
                     taken = true;
                   }
                 });
+                /* if player num not taken */
                 if(!taken){
                   data.name = name;
                   data.num = num;
                   data.dob = dob;
                   data.position = position;
                   players.update(data);
-                
                   firebase.database().ref('teams/'+teamid+'/players/'+key).remove();
                   $('#editModal').modal('hide');
                   window.location.reload();
                 } 
               });
             }
+            /* if player num not changed, only update fields */
             else{
               data.name = name;
               data.dob = dob;
@@ -375,11 +361,6 @@
           console.log("no logout");
         });
       });
-
-
     </script>
-
-    
   </body>
-
 </html>
